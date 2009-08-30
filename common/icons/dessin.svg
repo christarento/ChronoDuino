@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="0.46+devel"
+   sodipodi:docname="dessin.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+  <defs
+     id="defs4">
+    <linearGradient
+       id="linearGradient3793">
+      <stop
+         style="stop-color:#ff0000;stop-opacity:1;"
+         offset="0"
+         id="stop3795" />
+      <stop
+         style="stop-color:#ff0000;stop-opacity:0;"
+         offset="1"
+         id="stop3797" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient4317">
+      <stop
+         style="stop-color:#ff1800;stop-opacity:0;"
+         offset="0"
+         id="stop4319" />
+      <stop
+         id="stop4325"
+         offset="0.5"
+         style="stop-color:#ff1b00;stop-opacity:1;" />
+      <stop
+         style="stop-color:#ff1b00;stop-opacity:0;"
+         offset="1"
+         id="stop4321" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient3602">
+      <stop
+         style="stop-color:#bb120f;stop-opacity:1;"
+         offset="0"
+         id="stop3604" />
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1;"
+         offset="1"
+         id="stop3606" />
+    </linearGradient>
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective10" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3602"
+       id="linearGradient3608"
+       x1="397.67376"
+       y1="595.86873"
+       x2="608.08759"
+       y2="595.86873"
+       gradientUnits="userSpaceOnUse" />
+    <inkscape:perspective
+       id="perspective3715"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective4341"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective4363"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4317-4"
+       id="radialGradient4329-7"
+       cx="318.93802"
+       cy="405.58038"
+       fx="318.93802"
+       fy="405.58038"
+       r="102.0034"
+       gradientTransform="matrix(1,0,0,1.0351439,0,-14.25369)"
+       gradientUnits="userSpaceOnUse"
+       spreadMethod="repeat" />
+    <linearGradient
+       id="linearGradient4317-4">
+      <stop
+         style="stop-color:#ff1800;stop-opacity:0;"
+         offset="0"
+         id="stop4319-5" />
+      <stop
+         id="stop4325-5"
+         offset="0.5"
+         style="stop-color:#ff1b00;stop-opacity:1;" />
+      <stop
+         style="stop-color:#ff1b00;stop-opacity:0;"
+         offset="1"
+         id="stop4321-8" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3602"
+       id="linearGradient5852"
+       x1="219.30463"
+       y1="405.58038"
+       x2="418.57141"
+       y2="405.58038"
+       gradientUnits="userSpaceOnUse" />
+    <filter
+       inkscape:collect="always"
+       id="filter5854">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="2.2843191"
+         id="feGaussianBlur5856" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       id="filter3789">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="3.041102"
+         id="feGaussianBlur3791" />
+    </filter>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3602"
+       id="linearGradient3799"
+       x1="136.99446"
+       y1="804.17902"
+       x2="344.32849"
+       y2="804.17902"
+       gradientUnits="userSpaceOnUse" />
+    <filter
+       id="filter3809"
+       inkscape:label="Motion blur, horizontal"
+       inkscape:menu="Blurs"
+       inkscape:menu-tooltip="Blur as if the object flies horizontally; adjust Standard Deviation to vary force">
+      <feGaussianBlur
+         id="feGaussianBlur3811"
+         in="SourceGraphic"
+         stdDeviation="5 0.01" />
+    </filter>
+    <inkscape:perspective
+       id="perspective3847"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.7"
+     inkscape:cx="40.962518"
+     inkscape:cy="205.45724"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer6"
+     showgrid="false"
+     inkscape:window-width="1440"
+     inkscape:window-height="823"
+     inkscape:window-x="0"
+     inkscape:window-y="26"
+     showguides="true"
+     inkscape:guide-bbox="true">
+    <sodipodi:guide
+       orientation="1,0"
+       position="496.42857,200.71429"
+       id="guide5858" />
+    <sodipodi:guide
+       orientation="0,1"
+       position="232.85714,517.14286"
+       id="guide3654" />
+    <sodipodi:guide
+       orientation="0,1"
+       position="-207.58636,860.64997"
+       id="guide3718" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Stuff"
+     inkscape:groupmode="layer"
+     id="layer1"
+     style="display:inline">
+    <path
+       sodipodi:type="arc"
+       style="fill:none;stroke:url(#linearGradient5852);stroke-width:10;stroke-linejoin:bevel;stroke-miterlimit:17.89999962;stroke-opacity:0.60051551;stroke-dasharray:none;filter:url(#filter5854)"
+       id="path3740-6"
+       sodipodi:cx="318.93802"
+       sodipodi:cy="405.58038"
+       sodipodi:rx="89.6334"
+       sodipodi:ry="93.218201"
+       d="m 408.57142,405.58038 a 89.6334,93.218201 0 1 1 -179.2668,0 89.6334,93.218201 0 1 1 179.2668,0 z"
+       transform="matrix(1,0,-0.40102129,1,-156.95306,162.72299)" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="549.01788"
+       y="595.77325"
+       id="text2820"><tspan
+         sodipodi:role="line"
+         id="tspan2822"
+         x="549.01788"
+         y="595.77325" /><tspan
+         sodipodi:role="line"
+         id="tspan2824"
+         x="549.01788"
+         y="645.77325" /></text>
+    <path
+       style="opacity:0.90206185;fill:#3bff00;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       clip-path="none"
+       d="m -205.90625,86.78125 c -57.9899,0 -105,47.0101 -105,105 0,57.9899 47.0101,105 105,105 57.9899,0 105,-47.0101 105,-105 0,-57.9899 -47.0101,-105 -105,-105 z m 2.875,12 c 52.44183,0 94.9375,42.49567 94.9375,94.9375 0,52.44183 -42.49567,94.96875 -94.9375,94.96875 -52.44183,0 -94.96875,-42.52692 -94.96875,-94.96875 0,-14.93798 3.47925,-29.0514 9.625,-41.625 0.25985,-0.53931 0.5112,-1.06038 0.78125,-1.59375 0.0171,-0.0334 0.0454,-0.0604 0.0625,-0.0937 0.32894,-0.64767 0.65621,-1.29882 1,-1.9375 0.0556,-0.10231 0.10031,-0.21042 0.15625,-0.3125 0.30795,-0.56691 0.64925,-1.1279 0.96875,-1.6875 0.0466,-0.081 0.0782,-0.1692 0.125,-0.25 0.33253,-0.57832 0.68653,-1.14847 1.03125,-1.71875 0.0361,-0.0595 0.0575,-0.12811 0.0937,-0.1875 1.14623,-1.88652 2.3494,-3.7062 3.625,-5.5 0.0168,-0.0236 0.0457,-0.0389 0.0625,-0.0625 0.41105,-0.57802 0.82643,-1.15043 1.25,-1.71875 0.0174,-0.0233 0.045,-0.0392 0.0625,-0.0625 0.424,-0.56781 0.84495,-1.1296 1.28125,-1.6875 0.0462,-0.0588 0.0787,-0.12885 0.125,-0.1875 0.31294,-0.39821 0.64962,-0.7632 0.96875,-1.15625 0.15939,-0.19515 0.30779,-0.39994 0.46875,-0.59375 0.40413,-0.48969 0.80506,-0.98737 1.21875,-1.46875 0.063,-0.0728 0.12425,-0.14619 0.1875,-0.21875 0.41076,-0.47508 0.8613,-0.93948 1.28125,-1.40625 17.38144,-19.3192 42.56036,-31.46875 70.59375,-31.46875 z"
+       id="path3686" />
+    <rect
+       ry="7.5"
+       y="481.60605"
+       x="69.267464"
+       height="15"
+       width="52.857143"
+       id="rect3703"
+       style="fill:#3bff00;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       transform="matrix(0,1,-1,0,0,0)"
+       inkscape:transform-center-y="-95.714281" />
+    <rect
+       inkscape:transform-center-y="-67.680222"
+       transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
+       style="fill:#3bff00;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect3705"
+       width="52.857143"
+       height="15"
+       x="-332.64554"
+       y="473.69775"
+       ry="7.5"
+       inkscape:transform-center-x="67.680214" />
+    <rect
+       inkscape:transform-center-x="35.547435"
+       ry="7.5"
+       y="517.71161"
+       x="-126.07259"
+       height="15"
+       width="52.857143"
+       id="rect3707"
+       style="fill:#3bff00;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       transform="matrix(0.37139126,0.92847646,-0.92847646,0.37139126,0,0)"
+       inkscape:transform-center-y="-88.868447" />
+    <rect
+       inkscape:transform-center-y="-36.727029"
+       transform="matrix(0.92345145,0.38371529,-0.38371529,0.92345145,0,0)"
+       style="fill:#3bff00;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect3709"
+       width="52.857143"
+       height="15"
+       x="-500.36148"
+       y="356.93561"
+       ry="7.5"
+       inkscape:transform-center-x="88.387491" />
+    <rect
+       inkscape:transform-center-y="-88.428835"
+       transform="matrix(-0.38267326,0.92388375,-0.92388375,-0.38267326,0,0)"
+       style="fill:#3bff00;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect3711"
+       width="52.857143"
+       height="15"
+       x="241.86588"
+       y="371.12952"
+       ry="7.5"
+       inkscape:transform-center-x="-36.627304" />
+    <rect
+       inkscape:transform-center-x="92.480932"
+       style="fill:#3bff00;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect3730"
+       width="52.857143"
+       height="10.95939"
+       x="-229.24188"
+       y="255.72041"
+       ry="5.4796948"
+       transform="matrix(0.90198471,0.43176797,-0.43176797,0.90198471,0,0)"
+       inkscape:transform-center-y="-44.269373" />
+    <rect
+       inkscape:transform-center-y="-75.540869"
+       transform="matrix(0.67614915,0.73676477,-0.73676477,0.67614915,0,0)"
+       ry="5.4796948"
+       y="275.81271"
+       x="-125.1339"
+       height="10.95939"
+       width="52.857143"
+       id="rect3732"
+       style="fill:#3bff00;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       inkscape:transform-center-x="69.325887" />
+    <rect
+       inkscape:transform-center-x="34.090718"
+       style="fill:#3bff00;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect3734"
+       width="52.857143"
+       height="10.95939"
+       x="-12.992588"
+       y="254.68304"
+       ry="5.4796948"
+       transform="matrix(0.33249344,0.94310557,-0.94310557,0.33249344,0,0)"
+       inkscape:transform-center-y="-96.697077" />
+    <rect
+       inkscape:transform-center-y="-102.38189"
+       transform="matrix(-0.05382065,0.99855062,-0.99855062,-0.05382065,0,0)"
+       ry="5.4796948"
+       y="191.94644"
+       x="77.121979"
+       height="10.95939"
+       width="52.857143"
+       id="rect3736"
+       style="fill:#3bff00;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       inkscape:transform-center-x="-5.51826" />
+    <rect
+       inkscape:transform-center-x="-41.118499"
+       style="fill:#3bff00;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect3738"
+       width="52.857143"
+       height="10.95939"
+       x="132.50787"
+       y="110.48484"
+       ry="5.4796948"
+       transform="matrix(-0.40103672,0.91606198,-0.91606198,-0.40103672,0,0)"
+       inkscape:transform-center-y="-93.92429" />
+    <rect
+       style="fill:#ffffff;stroke:none;fill-opacity:1"
+       id="rect2882"
+       width="265.12878"
+       height="265.12878"
+       x="108.5575"
+       y="675.03632"
+       inkscape:export-filename="/home/emilie/Images/ChronoServer_ChronoDuino/source/iconeApp16.png"
+       inkscape:export-xdpi="5.4299998"
+       inkscape:export-ydpi="5.4299998" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Base"
+     style="display:none">
+    <path
+       style="opacity:0.90206185;fill:url(#linearGradient3799);fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter3789)"
+       clip-path="none"
+       d="m 283.51825,697.81361 c -2.43857,0.12015 -5.10367,2.16574 -6.12756,4.78969 l -5.48624,14.08053 c -9.0168,0.17598 -18.18014,1.73294 -27.2613,4.50115 l 0.13875,-13.01294 c 0.0282,-2.64348 -2.20084,-4.01929 -4.98611,-3.08733 -2.78528,0.93196 -5.05153,3.81971 -5.07971,6.46319 l -0.12657,13.21493 c -8.97495,3.62874 -17.75203,8.36397 -26.11548,14.05167 l -5.93146,-11.48371 c -1.06789,-2.06511 -3.97469,-2.21261 -6.54728,-0.31739 -2.57257,1.89521 -3.79634,5.09056 -2.72846,7.15569 l 5.93147,11.48371 c -7.84381,6.23604 -15.21413,13.30031 -21.82377,21.00537 l -10.2808,-6.37663 c -1.94956,-1.21022 -5.12942,-0.13337 -7.11883,2.39485 -1.98942,2.52821 -2.008,5.54151 -0.0585,6.75173 l 10.20977,6.34778 c -8.55174,11.62099 -15.43632,24.40913 -19.99678,37.827 -18.19815,53.54285 7.58171,96.94786 57.58093,96.94786 49.99922,0 105.28412,-43.40501 123.48228,-96.94786 13.36425,-39.32054 3.01544,-73.16826 -23.23008,-88.37842 l 9.66461,-12.89754 c 1.9224,-2.56768 1.8561,-5.54108 -0.15958,-6.66516 -2.0157,-1.12409 -5.19407,0.058 -7.11647,2.62568 l -9.92683,13.27262 c -5.80891,-2.3417 -12.23816,-3.9071 -19.19736,-4.55887 l 5.40778,-13.84969 c 1.09215,-2.79889 -0.0691,-5.18705 -2.6315,-5.33791 -0.16015,-0.009 -0.32242,-0.008 -0.48499,0 z m -6.52732,30.0654 c 5.87895,0.36544 11.36538,1.41047 16.3834,3.08733 l -9.56171,12.75326 c -1.92239,2.56768 -1.82914,5.54109 0.18655,6.66518 2.01569,1.12409 5.19406,-0.058 7.11646,-2.62567 l 10.07631,-13.47462 c 25.33871,13.10479 35.64678,44.47327 23.1956,81.10732 -16.45708,48.42026 -66.44272,87.68591 -111.65836,87.68591 -45.21565,0 -68.53698,-39.26565 -52.0799,-87.68591 4.13151,-12.15575 10.37774,-23.72824 18.13409,-34.24915 l 8.0302,4.99166 c 1.94955,1.21022 5.12942,0.13337 7.11883,-2.39484 1.98942,-2.52822 2.008,-5.54151 0.0585,-6.75173 l -7.91511,-4.93395 c 0.0855,-0.0969 0.17526,-0.19179 0.25973,-0.28854 0.0654,-0.0748 0.12053,-0.15623 0.18623,-0.23083 0.46821,-0.53398 0.95234,-1.06041 1.42852,-1.58694 0.0497,-0.055 0.0897,-0.11829 0.13968,-0.17314 1.5803,-1.74185 3.18873,-3.42198 4.85148,-5.07822 0.0219,-0.0217 0.0516,-0.0359 0.0735,-0.0577 0.53581,-0.53369 1.07358,-1.06221 1.61713,-1.58694 0.0223,-0.0215 0.0511,-0.0363 0.0735,-0.0577 0.54376,-0.52426 1.08301,-1.04297 1.63426,-1.55809 0.0583,-0.0542 0.10829,-0.11897 0.16662,-0.17313 0.39479,-0.36767 0.79961,-0.70467 1.19812,-1.06757 0.19865,-0.18019 0.39088,-0.36927 0.59048,-0.54822 0.50211,-0.45213 1.00398,-0.91165 1.51174,-1.35612 0.0771,-0.0672 0.153,-0.13498 0.2303,-0.20197 0.50324,-0.43865 1.03744,-0.86743 1.546,-1.2984 0.77735,-0.65876 1.56527,-1.29275 2.35453,-1.9332 l 4.0514,7.81931 c 1.0679,2.06511 4.01145,2.18375 6.58403,0.28853 2.57258,-1.89521 3.78654,-5.06171 2.71865,-7.12682 l -4.07587,-7.90587 c 6.82014,-4.65658 13.96438,-8.64541 21.25507,-11.8011 l -0.13352,11.88766 c -0.0282,2.64348 2.20085,4.0193 4.98613,3.08733 2.78527,-0.93196 5.04173,-3.79087 5.0699,-6.43433 l 0.11887,-12.32048 c 7.64857,-2.46824 15.3734,-3.98544 23.01149,-4.44345 l -5.20431,13.33034 c -1.09217,2.7989 0.10588,5.15821 2.66824,5.30906 2.56238,0.15086 5.48365,-1.96194 6.5758,-4.76084 l 5.42739,-13.90741 z"
+       id="path3740"
+       inkscape:export-filename="/home/emilie/Images/ChronoServer_ChronoDuino/source/server32.png"
+       inkscape:export-xdpi="10.86"
+       inkscape:export-ydpi="10.86" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer6"
+     inkscape:label="RougeIconeApp"
+     style="display:inline">
+    <path
+       inkscape:export-ydpi="5.4299998"
+       inkscape:export-xdpi="5.4299998"
+       inkscape:export-filename="/home/emilie/Images/ChronoServer_ChronoDuino/source/iconeApp16.png"
+       id="path3685"
+       d="m 283.51825,697.81361 c -2.43857,0.12015 -5.10367,2.16574 -6.12756,4.78969 l -5.48624,14.08053 c -9.0168,0.17598 -18.18014,1.73294 -27.2613,4.50115 l 0.13875,-13.01294 c 0.0282,-2.64348 -2.20084,-4.01929 -4.98611,-3.08733 -2.78528,0.93196 -5.05153,3.81971 -5.07971,6.46319 l -0.12657,13.21493 c -8.97495,3.62874 -17.75203,8.36397 -26.11548,14.05167 l -5.93146,-11.48371 c -1.06789,-2.06511 -3.97469,-2.21261 -6.54728,-0.31739 -2.57257,1.89521 -3.79634,5.09056 -2.72846,7.15569 l 5.93147,11.48371 c -7.84381,6.23604 -15.21413,13.30031 -21.82377,21.00537 l -10.2808,-6.37663 c -1.94956,-1.21022 -5.12942,-0.13337 -7.11883,2.39485 -1.98942,2.52821 -2.008,5.54151 -0.0585,6.75173 l 10.20977,6.34778 c -8.55174,11.62099 -15.43632,24.40913 -19.99678,37.827 -18.19815,53.54285 7.58171,96.94786 57.58093,96.94786 49.99922,0 105.28412,-43.40501 123.48228,-96.94786 13.36425,-39.32054 3.01544,-73.16826 -23.23008,-88.37842 l 9.66461,-12.89754 c 1.9224,-2.56768 1.8561,-5.54108 -0.15958,-6.66516 -2.0157,-1.12409 -5.19407,0.058 -7.11647,2.62568 l -9.92683,13.27262 c -5.80891,-2.3417 -12.23816,-3.9071 -19.19736,-4.55887 l 5.40778,-13.84969 c 1.09215,-2.79889 -0.0691,-5.18705 -2.6315,-5.33791 -0.16015,-0.009 -0.32242,-0.008 -0.48499,0 z m -6.52732,30.0654 c 5.87895,0.36544 11.36538,1.41047 16.3834,3.08733 l -9.56171,12.75326 c -1.92239,2.56768 -1.82914,5.54109 0.18655,6.66518 2.01569,1.12409 5.19406,-0.058 7.11646,-2.62567 l 10.07631,-13.47462 c 25.33871,13.10479 35.64678,44.47327 23.1956,81.10732 -16.45708,48.42026 -66.44272,87.68591 -111.65836,87.68591 -45.21565,0 -68.53698,-39.26565 -52.0799,-87.68591 4.13151,-12.15575 10.37774,-23.72824 18.13409,-34.24915 l 8.0302,4.99166 c 1.94955,1.21022 5.12942,0.13337 7.11883,-2.39484 1.98942,-2.52822 2.008,-5.54151 0.0585,-6.75173 l -7.91511,-4.93395 c 0.0855,-0.0969 0.17526,-0.19179 0.25973,-0.28854 0.0654,-0.0748 0.12053,-0.15623 0.18623,-0.23083 0.46821,-0.53398 0.95234,-1.06041 1.42852,-1.58694 0.0497,-0.055 0.0897,-0.11829 0.13968,-0.17314 1.5803,-1.74185 3.18873,-3.42198 4.85148,-5.07822 0.0219,-0.0217 0.0516,-0.0359 0.0735,-0.0577 0.53581,-0.53369 1.07358,-1.06221 1.61713,-1.58694 0.0223,-0.0215 0.0511,-0.0363 0.0735,-0.0577 0.54376,-0.52426 1.08301,-1.04297 1.63426,-1.55809 0.0583,-0.0542 0.10829,-0.11897 0.16662,-0.17313 0.39479,-0.36767 0.79961,-0.70467 1.19812,-1.06757 0.19865,-0.18019 0.39088,-0.36927 0.59048,-0.54822 0.50211,-0.45213 1.00398,-0.91165 1.51174,-1.35612 0.0771,-0.0672 0.153,-0.13498 0.2303,-0.20197 0.50324,-0.43865 1.03744,-0.86743 1.546,-1.2984 0.77735,-0.65876 1.56527,-1.29275 2.35453,-1.9332 l 4.0514,7.81931 c 1.0679,2.06511 4.01145,2.18375 6.58403,0.28853 2.57258,-1.89521 3.78654,-5.06171 2.71865,-7.12682 l -4.07587,-7.90587 c 6.82014,-4.65658 13.96438,-8.64541 21.25507,-11.8011 l -0.13352,11.88766 c -0.0282,2.64348 2.20085,4.0193 4.98613,3.08733 2.78527,-0.93196 5.04173,-3.79087 5.0699,-6.43433 l 0.11887,-12.32048 c 7.64857,-2.46824 15.3734,-3.98544 23.01149,-4.44345 l -5.20431,13.33034 c -1.09217,2.7989 0.10588,5.15821 2.66824,5.30906 2.56238,0.15086 5.48365,-1.96194 6.5758,-4.76084 l 5.42739,-13.90741 z"
+       clip-path="none"
+       style="opacity:0.90206185000000005;fill:#d60000;fill-opacity:1;fill-rule:nonzero;stroke:#bf0000;display:inline;stroke-opacity:1;stroke-width:1.7;stroke-miterlimit:4;stroke-dasharray:none" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer5"
+     inkscape:label="Chrono"
+     style="display:none">
+    <text
+       transform="scale(1.0090478,0.99103333)"
+       sodipodi:linespacing="125%"
+       id="text3801"
+       y="833.21106"
+       x="132.05864"
+       style="font-size:39.64133453px;font-style:normal;font-weight:normal;line-height:125%;fill:#f1f1f1;fill-opacity:0.93229173;stroke:#000000;stroke-width:1.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline;font-family:Bitstream Vera Sans"
+       xml:space="preserve"
+       inkscape:export-filename="/home/emilie/Images/ChronoServer_ChronoDuino/source/server32.png"
+       inkscape:export-xdpi="10.86"
+       inkscape:export-ydpi="10.86"><tspan
+         id="tspan3803"
+         style="font-size:47.56959915px;font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#f1f1f1;fill-opacity:0.93229173;stroke:#000000;stroke-width:1.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:Birdman;-inkscape-font-specification:Birdman Italic"
+         y="833.21106"
+         x="132.05864"
+         sodipodi:role="line">CHRONo</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:39.64133453px;font-style:normal;font-weight:normal;line-height:125%;fill:#f1f1f1;fill-opacity:0.93229173;stroke:#000000;stroke-width:1.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline;filter:url(#filter3809);font-family:Bitstream Vera Sans"
+       x="132.05864"
+       y="833.21106"
+       id="text2816"
+       sodipodi:linespacing="125%"
+       transform="scale(1.0090478,0.99103333)"
+       inkscape:export-filename="/home/emilie/Images/ChronoServer_ChronoDuino/source/server32.png"
+       inkscape:export-xdpi="10.86"
+       inkscape:export-ydpi="10.86"><tspan
+         sodipodi:role="line"
+         x="132.05864"
+         y="833.21106"
+         style="font-size:47.56959915px;font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#f1f1f1;fill-opacity:0.93229173;stroke:#000000;stroke-width:1.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:Birdman;-inkscape-font-specification:Birdman Italic"
+         id="tspan2826">CHRONo</tspan></text>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="CalqueServer"
+     style="display:none">
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;fill:#000000;fill-opacity:1;stroke:#980000;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
+       x="242.76834"
+       y="848.86462"
+       id="text3612"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/emilie/Images/ChronoServer_ChronoDuino/source/server32.png"
+       inkscape:export-xdpi="10.86"
+       inkscape:export-ydpi="10.86"><tspan
+         sodipodi:role="line"
+         id="tspan3614"
+         x="242.76834"
+         y="848.86462"
+         style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:#980000;stroke-opacity:1;font-family:Birdman;-inkscape-font-specification:Birdman">server</tspan></text>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer4"
+     inkscape:label="CalqueDuino"
+     style="display:none">
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;fill:#000000;fill-opacity:1;stroke:#980000;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
+       x="252.75952"
+       y="848.69312"
+       id="text3612-9"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/emilie/Images/ChronoServer_ChronoDuino/source/server128.png"
+       inkscape:export-xdpi="43.450001"
+       inkscape:export-ydpi="43.450001"><tspan
+         sodipodi:role="line"
+         id="tspan3614-0"
+         x="252.75952"
+         y="848.69312"
+         style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:#980000;stroke-opacity:1;font-family:Birdman;-inkscape-font-specification:Birdman">duino</tspan></text>
+  </g>
+</svg>

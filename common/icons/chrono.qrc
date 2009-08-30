@@ -1,0 +1,26 @@
+<RCC>
+  <qresource prefix="server" >
+    <file>server128.png</file>
+    <file>bind.png</file>
+  </qresource>
+  <qresource prefix="common" >
+    <file>tester.png</file>
+    <file>cross.png</file>
+    <file>check.png</file>
+    <file>exit.png</file>
+    <file>resetproperty.png</file>
+    <file>iconApp32.png</file>
+    <file>configure.png</file>
+    <file>edit.png</file>
+    <file>edit_add.png</file>
+    <file>edit_remove.png</file>
+    <file>nobody.png</file>
+  </qresource>
+  <qresource prefix="client" >
+    <file>document-print.png</file>
+    <file>document-print-preview.png</file>
+    <file>system-log-out.png</file>
+    <file>wired.png</file>
+    <file>duino128.png</file>
+  </qresource>
+</RCC>
