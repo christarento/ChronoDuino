@@ -32,12 +32,16 @@ bool SerialPort::open(OpenMode mode)
 		return false;
 	}
 
-	//TODO fix open mode
+	DWORD access = 0;
+	if (mode & QIODevice::ReadOnly)
+		access |= GENERIC_READ;
+	if (mode & QIODevice::WriteOnly)
+		access |= GENERIC_WRITE;
 
 	//Open port handle
 	m_port_desc = CreateFile(
 			m_device.toStdWString().c_str(),
-			GENERIC_READ | GENERIC_WRITE, // access mode
+			access, // access mode
 			0,                     // comm devices must be opened w/exclusive-access
 			0,                     // no security attrs
 			OPEN_EXISTING,         // comm devices must use OPEN_EXISTING
@@ -67,7 +71,7 @@ bool SerialPort::open(OpenMode mode)
 	//Initialization
 	ZeroMemory(&m_overlapped_io, sizeof(OVERLAPPED));
 	setOpenMode(mode);
-	m_timer->start(10);//TODO
+	m_timer->start(1);//TODO
 
 	return true;
 }
