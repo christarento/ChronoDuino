@@ -12,14 +12,17 @@
 
 #include "ChronoServer.h"
 #include "EditPreferencesDialog.h"
+#include "SerialTesterDialog.h"
 
 ChronoServer::ChronoServer(QWidget* a_parent) :
 	QMainWindow(a_parent),
 	m_socket(NULL),
+	m_serial_port(NULL),
 	m_state(WAITING_FOR_CONNECTION),
 	m_current_data_type(UNDEFINED),
 	m_num_bytes_to_read(-1)
 {
+	//UI
 	m_chrono_server.setupUi(this);
 	m_chrono_server.m_central_widget->setEnabled(false);
 
@@ -33,6 +36,7 @@ ChronoServer::ChronoServer(QWidget* a_parent) :
 	connect(m_chrono_server.m_action_listen, SIGNAL(triggered()), SLOT(listenAction()));
 	connect(m_chrono_server.m_action_preferences, SIGNAL(triggered()), SLOT(preferencesAction()));
 	connect(m_chrono_server.m_action_test, SIGNAL(triggered()), SLOT(testAction()));
+	connect(m_chrono_server.m_pb_arm, SIGNAL(clicked()), SLOT(arm()));
 }
 
 ChronoServer::~ChronoServer()
@@ -78,7 +82,22 @@ void ChronoServer::preferencesAction()
 
 void ChronoServer::testAction()
 {
+	SerialTesterDialog test_dialog(this);
+	test_dialog.exec();
+}
 
+void ChronoServer::arm()
+{
+	//Settings
+	const QSettings settings;
+	const QString device = settings.value(EditPreferencesDialog::SERIAL_PORT).toString();
+	const int rate = settings.value(EditPreferencesDialog::SERIAL_RATE).toInt();
+
+	//Serial
+	m_serial_port = new SerialPort(device, rate, this);
+	connect(m_serial_port, SIGNAL(readyRead()), SLOT(processSerialData()));
+
+	m_serial_port->open(QIODevice::ReadWrite);
 }
 
 void ChronoServer::sendMessage(const QString& a_message)
@@ -86,8 +105,14 @@ void ChronoServer::sendMessage(const QString& a_message)
 
 }
 
+void ChronoServer::processSerialData()
+{
+
+}
+
 void ChronoServer::createNewConnection()
 {
+	//Socket
 	m_socket = m_server->nextPendingConnection();
 	if (!m_socket)
 	{
@@ -102,7 +127,8 @@ void ChronoServer::createNewConnection()
 
 	//Connect
 	connect(m_socket, SIGNAL(disconnected()), SLOT(reset()));
-	connect(m_socket, SIGNAL(readyRead()), SLOT(processReadyRead()));
+	connect(m_socket, SIGNAL(readyRead()), SLOT(processSocketData()));
+
 
 	//UI
 	m_chrono_server.m_central_widget->setEnabled(true);
@@ -110,8 +136,19 @@ void ChronoServer::createNewConnection()
 
 void ChronoServer::reset()
 {
-	m_socket->deleteLater();
-	m_socket = NULL;
+	//Socket
+	if (m_socket)
+	{
+		m_socket->deleteLater();
+		m_socket = NULL;
+	}
+
+	//Serial
+	if (m_serial_port)
+	{
+		m_serial_port->deleteLater();
+		m_serial_port = NULL;
+	}
 
 	if (m_state!=FINISHED)
 	{
@@ -130,7 +167,7 @@ void ChronoServer::reset()
 	m_chrono_server.m_lbl_time->setText("00:00:000");
 }
 
-void ChronoServer::processReadyRead()
+void ChronoServer::processSocketData()
 {
 	if (m_state == WAITING_FOR_COMPETITOR)
 	{
@@ -257,4 +294,3 @@ void ChronoServer::processData()
     	 break;
      }
 }
-

@@ -13,6 +13,7 @@
 #include <QTime>
 #include <QTimer>
 
+#include "SerialPort.h"
 #include "ui_NewResultDialog.h"
 
 class NewResultDialog : public QDialog
@@ -23,6 +24,7 @@ public:
 	{
 		WAITING_FOR_CONNECTION,
 		CONNECTED,
+		READY,
 		ARMED,
 		RUNNING,
 		FINISHED
@@ -34,13 +36,16 @@ public:
 private:
 	void initConnection();
 	void initRound();
+	void initSerial();
 
 	void sendCompetitorInformations();
 	void sendCurrentTime();
 
 	Ui::NewResultDialog m_dialog;
 	QTcpSocket* m_socket;
-	Status m_status;
+	SerialPort* m_serial_port;
+
+	Status m_state;
 	QTime m_time;
 	QTimer* m_refresh_timer;
 	int m_elapsed_time;
@@ -54,10 +59,12 @@ private slots:
 	void onArm();
 	void onQuit();
 
+	void processSerialData();
+	void processSocketData();
+
 	void onConnected();
 	void onDisconnected();
 	void onHostFound();
-	void onReadyRead();
 };
 
 #endif /* NEWRESULTDIALOG_H_ */

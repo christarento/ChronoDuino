@@ -32,6 +32,8 @@ bool SerialPort::open(OpenMode mode)
 		return false;
 	}
 
+	//TODO fix open mode
+
 	//Open port handle
 	m_port_desc = CreateFile(
 			m_device.toStdWString().c_str(),

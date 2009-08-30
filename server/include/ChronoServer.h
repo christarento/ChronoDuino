@@ -11,6 +11,7 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 
+#include "SerialPort.h"
 #include "ui_ChronoServer.h"
 
 class ChronoServer : public QMainWindow
@@ -43,9 +44,13 @@ public:
 	virtual ~ChronoServer();
 
 private:
+	void processData();
+	void sendMessage(const QString& a_message);
+
 	Ui::ChronoServer m_chrono_server;
 	QTcpServer* m_server;
 	QTcpSocket* m_socket;
+	SerialPort* m_serial_port;
 
 	State m_state;
 	DataType m_current_data_type;
@@ -57,17 +62,19 @@ private slots:
 	void listenAction();
 	void preferencesAction();
 	void testAction();
+	void arm();
 
-	void sendMessage(const QString& a_message);
+	//serial
+	void processSerialData();
 
+	//socket
 	void createNewConnection();
 	void reset();
-	void processReadyRead();
+	void processSocketData();
 	bool readProtocolHeader();
 	int readDataIntoBuffer(const int a_max_size=MAX_BUFFER_SIZE);
 	int dataLengthForCurrentDataType();
 	bool hasEnoughData();
-	void processData();
 };
 
 #endif /* CHRONOSERVER_H_ */

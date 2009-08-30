@@ -16,7 +16,9 @@
 
 NewResultDialog::NewResultDialog(QWidget* a_parent) :
 	QDialog(a_parent),
-	m_status(WAITING_FOR_CONNECTION),
+	m_socket(NULL),
+	m_serial_port(NULL),
+	m_state(WAITING_FOR_CONNECTION),
 	m_elapsed_time(-1)
 {
 	//UI
@@ -27,19 +29,13 @@ NewResultDialog::NewResultDialog(QWidget* a_parent) :
 	m_refresh_timer = new QTimer(this);
 	m_refresh_timer->setInterval(200);
 
-	//Socket
-	m_socket = new QTcpSocket(this);
-	connect(m_socket, SIGNAL(connected()), SLOT(onConnected()));
-	connect(m_socket, SIGNAL(disconnected()), SLOT(onDisconnected()));
-	connect(m_socket, SIGNAL(hostFound()), SLOT(onHostFound()));
-	connect(m_socket, SIGNAL(readyRead()), SLOT(onReadyRead()));
-
 	//Connect
 	connect(m_dialog.m_pb_quit, SIGNAL(clicked()), SLOT(onQuit()));
 	connect(m_dialog.m_cb_round, SIGNAL(currentIndexChanged(int)), SLOT(refreshCompetitor(int)));
 	connect(m_dialog.m_pb_arm, SIGNAL(clicked()), SLOT(onArm()));
 	connect(m_refresh_timer, SIGNAL(timeout()), SLOT(refreshTime()));
 
+	initSerial();
 	initConnection();
 	initRound();
 }
@@ -51,15 +47,19 @@ NewResultDialog::~NewResultDialog()
 
 void NewResultDialog::initConnection()
 {
+	//Socket
+	m_socket = new QTcpSocket(this);
+	connect(m_socket, SIGNAL(connected()), SLOT(onConnected()));
+	connect(m_socket, SIGNAL(disconnected()), SLOT(onDisconnected()));
+	connect(m_socket, SIGNAL(hostFound()), SLOT(onHostFound()));
+	connect(m_socket, SIGNAL(readyRead()), SLOT(processSocketData()));
+
+	//Settings
 	const QSettings settings;
-
-	//Hostname
 	const QString hostname = settings.value(EditPreferencesDialog::SERVER_URL).toString();
-
-	//Port
 	const int port = settings.value(EditPreferencesDialog::SERVER_PORT).toInt();
 
-	//Socket
+	//Connection
 	m_socket->connectToHost(hostname, port, QIODevice::ReadWrite);
 }
 
@@ -79,6 +79,21 @@ void NewResultDialog::initRound()
 
 	while (query.next())
 		m_dialog.m_cb_round->addItem(query.value(1).toString(), query.value(0).toInt());
+}
+
+void NewResultDialog::initSerial()
+{
+	//Settings
+	const QSettings settings;
+	const QString device = settings.value(EditPreferencesDialog::SERIAL_PORT).toString();
+	const int rate = settings.value(EditPreferencesDialog::SERIAL_RATE).toInt();
+
+	//Serial port
+	m_serial_port = new SerialPort(device, rate, this);
+	connect(m_serial_port, SIGNAL(readyRead()), SLOT(processSerialData()));
+
+	//Connection
+	m_serial_port->open(QIODevice::ReadWrite);
 }
 
 void NewResultDialog::sendCompetitorInformations()
@@ -106,8 +121,8 @@ void NewResultDialog::sendCompetitorInformations()
 
 void NewResultDialog::sendCurrentTime()
 {
-	QByteArray time = QString::number(m_time.elapsed()).toUtf8();
-	QByteArray data = "TIME " + QByteArray::number(time.size()) + " " + time;
+	const QByteArray time = QString::number(m_time.elapsed()).toUtf8();
+	const QByteArray data = "TIME " + QByteArray::number(time.size()) + " " + time;
 	if (m_socket->write(data) == data.size())
 	 ;//isGreetingMessageSent = true;
 }
@@ -120,6 +135,9 @@ void NewResultDialog::start()
 void NewResultDialog::stop()
 {
 	m_elapsed_time = m_time.elapsed();
+	const QByteArray time = QString(m_elapsed_time).toUtf8();
+	const QByteArray data = "TIME " + QByteArray::number(time.size()) + " " + time;
+	m_socket->write(data);
 }
 
 void NewResultDialog::refreshCompetitor(int a_round_idx)
@@ -173,7 +191,7 @@ void NewResultDialog::onArm()
 void NewResultDialog::onQuit()
 {
 	bool quit = true;
-	if (m_status != FINISHED)
+	if (m_state != FINISHED)
 	{
 		const QMessageBox::StandardButton res = QMessageBox::warning(
 				this,
@@ -192,14 +210,14 @@ void NewResultDialog::onQuit()
 
 void NewResultDialog::onConnected()
 {
-	m_status = CONNECTED;
+	m_state = CONNECTED;
 	m_dialog.m_central_widget->setEnabled(true);
 }
 
 void NewResultDialog::onDisconnected()
 {
 	m_dialog.m_central_widget->setEnabled(false);
-	m_status = FINISHED;
+	m_state = FINISHED;
 
 	QMessageBox::critical(
 			this,
@@ -212,7 +230,31 @@ void NewResultDialog::onHostFound()
 
 }
 
-void NewResultDialog::onReadyRead()
+void NewResultDialog::processSerialData()
 {
+	if (m_state == ARMED && 1)
+		start();
+}
 
+void NewResultDialog::processSocketData()
+{
+	char value;
+	if (m_serial_port->getChar(&value))
+	{
+		switch (value)
+		{
+		case 'A'://armed
+			if (m_state == READY)
+			m_state = ARMED;
+			break;
+
+		case 'F'://finished
+			if (m_state == RUNNING)
+				stop();
+			break;
+
+		default:
+			break;
+		}
+	}
 }

@@ -16,11 +16,9 @@ SerialTesterDialog::SerialTesterDialog(QWidget* a_parent) :
 
 	//Serial port
 	m_serial_port = new SerialPort("COM4", 9600, this);
-
-	//Connect
 	connect(m_serial_port, SIGNAL(readyRead()), SLOT(processData()));
 
-	m_serial_port->open(QIODevice::ReadOnly);
+	m_serial_port->open(QIODevice::ReadWrite);
 }
 
 SerialTesterDialog::~SerialTesterDialog()
