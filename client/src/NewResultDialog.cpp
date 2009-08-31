@@ -36,8 +36,6 @@ NewResultDialog::NewResultDialog(QWidget* a_parent) :
 	connect(m_refresh_timer, SIGNAL(timeout()), SLOT(refreshTime()));
 
 	initSerial();
-	initConnection();
-	initRound();
 }
 
 NewResultDialog::~NewResultDialog()
@@ -92,8 +90,11 @@ void NewResultDialog::initSerial()
 	m_serial_port = new SerialPort(device, rate, this);
 	connect(m_serial_port, SIGNAL(readyRead()), SLOT(processSerialData()));
 
-	//Connection
 	m_serial_port->open(QIODevice::ReadWrite);
+
+	//Send test
+	char test = 'T';
+	m_serial_port->write(&test, 1);
 }
 
 void NewResultDialog::sendCompetitorInformations()
@@ -130,11 +131,15 @@ void NewResultDialog::sendCurrentTime()
 void NewResultDialog::start()
 {
 	m_time.start();
+	m_state = RUNNING;
 }
 
 void NewResultDialog::stop()
 {
+	//Elapsed time
 	m_elapsed_time = m_time.elapsed();
+
+	//Send finish time to server
 	const QByteArray time = QString(m_elapsed_time).toUtf8();
 	const QByteArray data = "TIME " + QByteArray::number(time.size()) + " " + time;
 	m_socket->write(data);
@@ -232,6 +237,29 @@ void NewResultDialog::onHostFound()
 
 void NewResultDialog::processSerialData()
 {
+	char value;
+	if (m_serial_port->getChar(&value))
+	{
+		switch (value)
+		{
+		case 'H':
+			if (m_state == ARMED)
+				start();
+			break;
+
+		case 'T':
+			initConnection();
+			initRound();
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	initConnection();
+	initRound();
+
 	if (m_state == ARMED && 1)
 		start();
 }
@@ -239,13 +267,13 @@ void NewResultDialog::processSerialData()
 void NewResultDialog::processSocketData()
 {
 	char value;
-	if (m_serial_port->getChar(&value))
+	if (m_socket->getChar(&value))
 	{
 		switch (value)
 		{
 		case 'A'://armed
 			if (m_state == READY)
-			m_state = ARMED;
+				m_state = ARMED;
 			break;
 
 		case 'F'://finished

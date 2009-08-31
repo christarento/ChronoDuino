@@ -82,7 +82,12 @@ void ChronoServer::preferencesAction()
 
 void ChronoServer::testAction()
 {
-	SerialTesterDialog test_dialog(this);
+	//Settings
+	const QSettings settings;
+	const QString device = settings.value(EditPreferencesDialog::SERIAL_PORT).toString();
+	const int rate = settings.value(EditPreferencesDialog::SERIAL_RATE).toInt();
+
+	SerialTesterDialog test_dialog(device, rate, this);
 	test_dialog.exec();
 }
 
@@ -98,6 +103,10 @@ void ChronoServer::arm()
 	connect(m_serial_port, SIGNAL(readyRead()), SLOT(processSerialData()));
 
 	m_serial_port->open(QIODevice::ReadWrite);
+
+	//Send test
+	char test = 'T';
+	m_serial_port->write(&test, 1);
 }
 
 void ChronoServer::sendMessage(const QString& a_message)
@@ -107,7 +116,29 @@ void ChronoServer::sendMessage(const QString& a_message)
 
 void ChronoServer::processSerialData()
 {
+	char value;
+	if (m_serial_port->getChar(&value))
+	{
+		switch (value)
+		{
+		case 'H':
+			if (m_state == RUNNING)//finish
+			{
+				char value = 'F';
+				m_socket->write(&value, 1);
+			}
+			break;
 
+		case 'T':
+			if (m_state == READY)
+				;//TODO
+			m_state = ARMED;
+			break;
+
+		default:
+			break;
+		}
+	}
 }
 
 void ChronoServer::createNewConnection()
