@@ -133,7 +133,12 @@ void ChronoDuino::printAction()
 
 void ChronoDuino::testAction()
 {
-	SerialTesterDialog test_dialog(this);
+	//Settings
+	const QSettings settings;
+	const QString device = settings.value(EditPreferencesDialog::SERIAL_PORT).toString();
+	const int rate = settings.value(EditPreferencesDialog::SERIAL_RATE).toInt();
+
+	SerialTesterDialog test_dialog(device, rate, this);
 	test_dialog.exec();
 }
 
