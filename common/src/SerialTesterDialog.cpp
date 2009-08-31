@@ -8,14 +8,14 @@
 #include "SerialTesterDialog.h"
 
 
-SerialTesterDialog::SerialTesterDialog(QWidget* a_parent) :
+SerialTesterDialog::SerialTesterDialog(const QString& a_device, const int a_rate, QWidget* a_parent) :
 	QDialog(a_parent)
 {
 	//UI
 	m_dialog.setupUi(this);
 
 	//Serial port
-	m_serial_port = new SerialPort("COM4", 9600, this);
+	m_serial_port = new SerialPort(a_device, a_rate, this);
 	connect(m_serial_port, SIGNAL(readyRead()), SLOT(processData()));
 
 	m_serial_port->open(QIODevice::ReadWrite);

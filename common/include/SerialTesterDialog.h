@@ -17,7 +17,7 @@ class SerialTesterDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	SerialTesterDialog(QWidget* a_parent=NULL);
+	SerialTesterDialog(const QString& a_device, const int a_rate, QWidget* a_parent=NULL);
 	virtual ~SerialTesterDialog();
 
 private:
