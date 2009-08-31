@@ -7,8 +7,12 @@ MOC_DIR = tmp
 RCC_DIR = tmp
 UI_DIR = include/ui
 
-DEPENDPATH += . icons include src ui
-INCLUDEPATH += . include
+DEPENDPATH += . \
+              include \
+              include/ui
+INCLUDEPATH += . \
+               include \
+               include/ui
 
 # Input
 HEADERS += include/SerialPort.h \

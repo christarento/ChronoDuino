@@ -7,9 +7,19 @@ QT += network
 MOC_DIR = tmp
 UI_DIR = include/ui
 
-DEPENDPATH += . include src ui
-INCLUDEPATH += . include ../common/include ../common/include/ui
-LIBS += -L../lib -lcommon
+DEPENDPATH += . \
+              include \
+              include/ui \
+              ../common/include \
+              ../common/include/ui
+INCLUDEPATH += . \
+               include \
+               include/ui \
+               ../common/include \
+               ../common/include/ui
+               
+LIBS += ../lib/libcommon.a
+POST_TARGETDEPS += ../lib/libcommon.a
 
 # Input
 HEADERS += include/ChronoServer.h \
