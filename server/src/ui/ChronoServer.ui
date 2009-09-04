@@ -312,11 +312,12 @@
  </widget>
  <resources>
   <include location="../../../common/icons/chrono.qrc"/>
+  <include location="../../../common/icons/chrono.qrc"/>
  </resources>
  <connections>
   <connection>
    <sender>m_action_quit</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>ChronoServer</receiver>
    <slot>close()</slot>
    <hints>
