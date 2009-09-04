@@ -144,8 +144,11 @@ void ChronoDuino::testAction()
 
 void ChronoDuino::aboutAction()
 {
+	QString message = "<qt><b>ChronoDuino (" + qApp->applicationVersion() + ")</b><br/>";
+	message += tr("<b>ChronoDuino</b> is part a complete race chronometer software suite.");
+
 	QMessageBox::about(
 			this,
 			tr("About ChronoDuino"),
-			tr("The <b>Menu</b> example shows how to create menu-bar menus and context menus."));
+			message );
 }

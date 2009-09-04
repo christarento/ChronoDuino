@@ -46,10 +46,13 @@ ChronoServer::~ChronoServer()
 
 void ChronoServer::aboutAction()
 {
+	QString message = "<qt><b>ChronoServer (" + qApp->applicationVersion() + ")</b><br/>";
+	message += tr("<b>ChronoServer</b> is part a complete race chronometer software suite.");
+
 	QMessageBox::about(
 			this,
 			tr("ChronoServer"),
-			tr("Server for ChronoDuino"));
+			message);
 }
 
 void ChronoServer::listenAction()

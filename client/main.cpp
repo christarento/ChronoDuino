@@ -8,12 +8,14 @@
 
 #include <QApplication>
 #include "ChronoDuino.h"
+#include "version.h"
 
 int main(int argc, char* argv[])
 {
 	QApplication app(argc, argv);
 	app.setOrganizationName("Chrisalys");
 	app.setApplicationName("ChronoDuino");
+	app.setApplicationVersion(revision);
 	Q_INIT_RESOURCE(chrono);
 
 	ChronoDuino mainWin;
