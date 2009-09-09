@@ -16,8 +16,6 @@
 
 class SerialPort : public QIODevice
 {
-	Q_OBJECT
-
 public:
 	SerialPort(const QString& device, const int rate, QObject* a_parent=NULL);
 	virtual ~SerialPort();
@@ -72,15 +70,9 @@ protected:
 
 private:
 	HANDLE m_port_desc;
-	OVERLAPPED m_overlapped_io;
 
 	QString m_device;
 	int m_rate;
-
-	QTimer* m_timer;
-
-private slots:
-	void checkData();
 };
 
 #endif /* SERIALPORT_H_ */

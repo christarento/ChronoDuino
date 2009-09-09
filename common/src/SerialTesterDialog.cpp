@@ -5,7 +5,12 @@
  *      Author: Christo
  */
 
+#include <QPushButton>
+#include <QMessageBox>
+
+#include "SerialPort.h"
 #include "SerialTesterDialog.h"
+#include "SerialThread.h"
 
 
 SerialTesterDialog::SerialTesterDialog(const QString& a_device, const int a_rate, QWidget* a_parent) :
@@ -15,10 +20,11 @@ SerialTesterDialog::SerialTesterDialog(const QString& a_device, const int a_rate
 	m_dialog.setupUi(this);
 
 	//Serial port
-	m_serial_port = new SerialPort(a_device, a_rate, this);
-	connect(m_serial_port, SIGNAL(readyRead()), SLOT(processData()));
+	m_serial_thread = new SerialThread(this, this);
+	m_serial_thread->open(a_device, a_rate, QIODevice::ReadWrite);
 
-	m_serial_port->open(QIODevice::ReadWrite);
+	//Connect
+	connect(m_dialog.m_pb_test, SIGNAL(clicked()), SLOT(instantTest()));
 }
 
 SerialTesterDialog::~SerialTesterDialog()
@@ -26,30 +32,35 @@ SerialTesterDialog::~SerialTesterDialog()
 
 }
 
-void SerialTesterDialog::processData()
+void SerialTesterDialog::processSerialData(const char a_value)
 {
-	char value;
-	if (m_serial_port->getChar(&value))
+	switch (a_value)
 	{
-		switch (value)
-		{
-		case 'H':
-		{
-			QPixmap pixmap(":/common/check.png");
-			m_dialog.m_lbl->setPixmap(pixmap);
-			QApplication::beep();
-			break;
-		}
-
-		case 'L':
-		{
-			QPixmap pixmap(":/common/cross.png");
-			m_dialog.m_lbl->setPixmap(pixmap);
-			break;
-		}
-
-		default:
-			break;
-		}
+	case 'H':
+	{
+		QApplication::beep();
+		break;
 	}
+
+	case 'L':
+		break;
+
+	case 'T':
+	{
+		QApplication::beep();
+		QPixmap pixmap(":/common/check.png");
+		m_dialog.m_lbl->setPixmap(pixmap);
+		m_dialog.m_group_box->setEnabled(true);
+		break;
+	}
+
+	default:
+		break;
+	}
+}
+
+void SerialTesterDialog::instantTest()
+{
+	const char value = 'T';
+	m_serial_thread->getSerialPort()->writeData(&value, 1);
 }

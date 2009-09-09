@@ -10,22 +10,26 @@
 
 #include <QDialog>
 
+#include "SerialPortReader.h"
 #include "ui_SerialTesterDialog.h"
-#include "SerialPort.h"
 
-class SerialTesterDialog : public QDialog
+class SerialThread;
+
+class SerialTesterDialog : public QDialog, public SerialPortReader
 {
 	Q_OBJECT
 public:
 	SerialTesterDialog(const QString& a_device, const int a_rate, QWidget* a_parent=NULL);
 	virtual ~SerialTesterDialog();
 
+	virtual void processSerialData(const char a_value);
+
 private:
 	Ui::SerialTesterDialog m_dialog;
-	SerialPort* m_serial_port;
+	SerialThread* m_serial_thread;
 
 private slots:
-	void processData();
+	void instantTest();
 };
 
 #endif /* SERIALTESTERDIALOG_H_ */

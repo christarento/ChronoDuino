@@ -6,6 +6,7 @@
  */
 
 #include <QDebug>
+#include <QMutex>
 
 #include "SerialPort.h"
 
@@ -15,8 +16,7 @@ SerialPort::SerialPort(const QString& device, const int rate, QObject* a_parent)
 	m_device(device),
 	m_rate(rate)
 {
-	m_timer = new QTimer(this);
-	connect(m_timer, SIGNAL(timeout()), SLOT(checkData()));
+
 }
 
 SerialPort::~SerialPort()
@@ -45,7 +45,7 @@ bool SerialPort::open(OpenMode mode)
 			0,                     // comm devices must be opened w/exclusive-access
 			0,                     // no security attrs
 			OPEN_EXISTING,         // comm devices must use OPEN_EXISTING
-			FILE_FLAG_OVERLAPPED,  // overlapped I/O
+			FILE_ATTRIBUTE_NORMAL,  // overlapped I/O
 			NULL);                 // hTemplate must be NULL for comm devices
 	if (m_port_desc == INVALID_HANDLE_VALUE)
 	{
@@ -67,18 +67,22 @@ bool SerialPort::open(OpenMode mode)
 		return false;
 	}
 
+	COMMTIMEOUTS timeout;
+	timeout.ReadIntervalTimeout = MAXDWORD;
+	timeout.ReadTotalTimeoutConstant = 0;
+	timeout.ReadTotalTimeoutMultiplier = 0;
+	timeout.WriteTotalTimeoutConstant = 0;
+	timeout.WriteTotalTimeoutMultiplier = 0;
+	SetCommTimeouts(m_port_desc, &timeout);
 
 	//Initialization
-	ZeroMemory(&m_overlapped_io, sizeof(OVERLAPPED));
 	setOpenMode(mode);
-	m_timer->start(1);//TODO
 
 	return true;
 }
 
 void SerialPort::close()
 {
-	m_timer->stop();
 	CloseHandle(m_port_desc);
 }
 
@@ -108,10 +112,10 @@ qint64 SerialPort::readData(char *data, qint64 maxSize)
 			data,// address of buffer that receives data
 			real_len,// number of bytes to read
 			&read,// address of number of bytes read
-			&m_overlapped_io);// address of structure for data
+			0);// address of structure for data
 
 	if (success == FALSE)
-		GetOverlappedResult(m_port_desc, &m_overlapped_io, &read, TRUE);
+		return 0;
 
 	return (qint64)read;
 }
@@ -120,22 +124,16 @@ qint64 SerialPort::writeData(const char *data, qint64 maxSize)
 {
 	DWORD written = 0;
 
-	const BOOL success = WriteFile(m_port_desc, data, (DWORD)maxSize, &written, &m_overlapped_io);
+	const BOOL success = WriteFile(
+			m_port_desc,
+			data,
+			(DWORD)maxSize,
+			&written,
+			0);
 	if (success == FALSE)
-		GetOverlappedResult(m_port_desc, &m_overlapped_io, &written, TRUE);
+		return 0;
 
 	return (qint64)written;
-}
-
-void SerialPort::checkData()
-{
-	if (!isOpen())
-	{
-		qWarning("QSerial::checkData() port not open...");
-		return;
-	}
-	if (size())
-		emit readyRead();
 }
 
 QStringList SerialPort::listSerialPort()
