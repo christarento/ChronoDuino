@@ -9,22 +9,24 @@
 #define NEWRESULTDIALOG_H_
 
 #include <QDialog>
-#include <QTcpSocket>
 #include <QTime>
 #include <QTimer>
 
-#include "SerialPort.h"
+#include "NewResultThread.h"
+#include "SerialPortReader.h"
 #include "ui_NewResultDialog.h"
 
-class NewResultDialog : public QDialog
+
+class SerialThread;
+
+class NewResultDialog : public QDialog, public SerialPortReader
 {
 	Q_OBJECT
 public:
 	enum Status
 	{
-		WAITING_FOR_CONNECTION,
+		WAITING,
 		CONNECTED,
-		READY,
 		ARMED,
 		RUNNING,
 		FINISHED
@@ -32,6 +34,9 @@ public:
 
 	NewResultDialog(QWidget* a_parent=NULL);
 	virtual ~NewResultDialog();
+
+	virtual void processSerialData(const char a_value);
+	void processSocketData(const char a_value);
 
 private:
 	void initConnection();
@@ -42,12 +47,12 @@ private:
 	void sendCurrentTime();
 
 	Ui::NewResultDialog m_dialog;
-	QTcpSocket* m_socket;
-	SerialPort* m_serial_port;
+	NewResultThread* m_result_thread;
+	SerialThread* m_serial_thread;
 
 	Status m_state;
 	QTime m_time;
-	QTimer* m_refresh_timer;
+	QTimer m_refresh_timer;
 	int m_elapsed_time;
 
 private slots:
@@ -58,9 +63,6 @@ private slots:
 	void refreshTime();
 	void onArm();
 	void onQuit();
-
-	void processSerialData();
-	void processSocketData();
 
 	void onConnected();
 	void onDisconnected();

@@ -5,7 +5,7 @@
  *      Author: Christo
  */
 
-
+#include <QDir>
 #include <QMessageBox>
 #include <QSettings>
 #include <QSqlQuery>
@@ -14,11 +14,14 @@
 #include "EditPreferencesDialog.h"
 #include "NewResultDialog.h"
 
+#include "SerialPort.h"
+#include "SerialThread.h"
+
 NewResultDialog::NewResultDialog(QWidget* a_parent) :
 	QDialog(a_parent),
-	m_socket(NULL),
-	m_serial_port(NULL),
-	m_state(WAITING_FOR_CONNECTION),
+	m_result_thread(NULL),
+	m_serial_thread(NULL),
+	m_state(WAITING),
 	m_elapsed_time(-1)
 {
 	//UI
@@ -26,14 +29,13 @@ NewResultDialog::NewResultDialog(QWidget* a_parent) :
 	m_dialog.m_central_widget->setEnabled(false);
 
 	//RefreshTimer
-	m_refresh_timer = new QTimer(this);
-	m_refresh_timer->setInterval(200);
+	m_refresh_timer.setInterval(200);
 
 	//Connect
 	connect(m_dialog.m_pb_quit, SIGNAL(clicked()), SLOT(onQuit()));
 	connect(m_dialog.m_cb_round, SIGNAL(currentIndexChanged(int)), SLOT(refreshCompetitor(int)));
 	connect(m_dialog.m_pb_arm, SIGNAL(clicked()), SLOT(onArm()));
-	connect(m_refresh_timer, SIGNAL(timeout()), SLOT(refreshTime()));
+	connect(&m_refresh_timer, SIGNAL(timeout()), SLOT(refreshTime()));
 
 	initSerial();
 }
@@ -46,11 +48,11 @@ NewResultDialog::~NewResultDialog()
 void NewResultDialog::initConnection()
 {
 	//Socket
-	m_socket = new QTcpSocket(this);
-	connect(m_socket, SIGNAL(connected()), SLOT(onConnected()));
-	connect(m_socket, SIGNAL(disconnected()), SLOT(onDisconnected()));
-	connect(m_socket, SIGNAL(hostFound()), SLOT(onHostFound()));
-	connect(m_socket, SIGNAL(readyRead()), SLOT(processSocketData()));
+	m_result_thread = new NewResultThread(this);
+//	connect(m_socket, SIGNAL(connected()), SLOT(onConnected()));
+//	connect(m_socket, SIGNAL(disconnected()), SLOT(onDisconnected()));
+//	connect(m_socket, SIGNAL(hostFound()), SLOT(onHostFound()));
+//	connect(m_socket, SIGNAL(readyRead()), SLOT(processSocketData()));
 
 	//Settings
 	const QSettings settings;
@@ -58,7 +60,7 @@ void NewResultDialog::initConnection()
 	const int port = settings.value(EditPreferencesDialog::SERVER_PORT).toInt();
 
 	//Connection
-	m_socket->connectToHost(hostname, port, QIODevice::ReadWrite);
+	m_result_thread->open(hostname, port);
 }
 
 void NewResultDialog::initRound()
@@ -87,14 +89,13 @@ void NewResultDialog::initSerial()
 	const int rate = settings.value(EditPreferencesDialog::SERIAL_RATE).toInt();
 
 	//Serial port
-	m_serial_port = new SerialPort(device, rate, this);
-	connect(m_serial_port, SIGNAL(readyRead()), SLOT(processSerialData()));
+	m_serial_thread = new SerialThread(this, this);
+	m_serial_thread->open(device, rate, QIODevice::ReadWrite);
 
-	m_serial_port->open(QIODevice::ReadWrite);
-
+	//TODO timeout
 	//Send test
 	char test = 'T';
-	m_serial_port->write(&test, 1);
+	m_serial_thread->getSerialPort()->writeData(&test, 1);
 }
 
 void NewResultDialog::sendCompetitorInformations()
@@ -111,38 +112,40 @@ void NewResultDialog::sendCompetitorInformations()
 	if (!query.next())
 		return;
 
-	QString info_str = query.value(0).toString() + "\\" + query.value(1).toString();
-	QByteArray info_ba = info_str.toUtf8();
-	QByteArray data = "COMPETITOR " + QByteArray::number(info_ba.size()) + " " + info_ba;
-	if (m_socket->write(data) == data.size())
-	 ;//isGreetingMessageSent = true;
+	//Photo
+	const QSettings settings;
+	const QDir image_dir( settings.value(EditPreferencesDialog::IMAGES_DIR).toString() );
+	const QString image_file = image_dir.filePath( query.value(2).toString() );
+	const QPixmap competitor_photo(image_file);
 
-	//TODO photo
+	//Send to server
+	m_result_thread->sendCompetitorInformations(
+			query.value(0).toString(),
+			query.value(1).toString(),
+			competitor_photo,
+			m_dialog.m_cb_round->currentText());
 }
 
 void NewResultDialog::sendCurrentTime()
 {
-	const QByteArray time = QString::number(m_time.elapsed()).toUtf8();
-	const QByteArray data = "TIME " + QByteArray::number(time.size()) + " " + time;
-	if (m_socket->write(data) == data.size())
-	 ;//isGreetingMessageSent = true;
+	m_result_thread->sendCurrentTime( m_time.elapsed() );
 }
 
 void NewResultDialog::start()
 {
 	m_time.start();
 	m_state = RUNNING;
+	m_refresh_timer.start();
 }
 
 void NewResultDialog::stop()
 {
 	//Elapsed time
 	m_elapsed_time = m_time.elapsed();
+	m_refresh_timer.stop();
 
 	//Send finish time to server
-	const QByteArray time = QString(m_elapsed_time).toUtf8();
-	const QByteArray data = "TIME " + QByteArray::number(time.size()) + " " + time;
-	m_socket->write(data);
+	m_result_thread->sendCurrentTime(m_elapsed_time);
 }
 
 void NewResultDialog::refreshCompetitor(int a_round_idx)
@@ -190,7 +193,10 @@ void NewResultDialog::onArm()
 	m_dialog.m_cb_competitor->setEnabled(false);
 	m_dialog.m_cb_round->setEnabled(false);
 
-	sendCompetitorInformations();
+	//TODO timer qui fait clignoter le armed
+
+	//Init socket thread
+	initConnection();
 }
 
 void NewResultDialog::onQuit()
@@ -235,54 +241,48 @@ void NewResultDialog::onHostFound()
 
 }
 
-void NewResultDialog::processSerialData()
+void NewResultDialog::processSerialData(const char a_value)
 {
-	char value;
-	if (m_serial_port->getChar(&value))
+	switch (a_value)
 	{
-		switch (value)
-		{
-		case 'H':
-			if (m_state == ARMED)
-				start();
-			break;
+	case 'H':
+		if (m_state == ARMED)
+			start();
+		break;
 
-		case 'T':
-			initConnection();
-			initRound();
-			break;
+	case 'T':
+		initRound();
+		qDebug("Process Serial T");
+		break;
 
-		default:
-			break;
-		}
+	default:
+		break;
 	}
-
-	initConnection();
-	initRound();
-
-	if (m_state == ARMED && 1)
-		start();
 }
 
-void NewResultDialog::processSocketData()
+void NewResultDialog::processSocketData(const char a_value)
 {
-	char value;
-	if (m_socket->getChar(&value))
+	switch (a_value)
 	{
-		switch (value)
-		{
-		case 'A'://armed
-			if (m_state == READY)
-				m_state = ARMED;
-			break;
+	case 'C'://connected to host
+	{
+		m_state = CONNECTED;
+		qDebug("Process Socket connected");
+		sendCompetitorInformations();
+		break;
+	}
 
-		case 'F'://finished
-			if (m_state == RUNNING)
-				stop();
-			break;
+	case 'A'://host armed
+		m_state = ARMED;
+		qDebug("Process Socket armed");
+		break;
 
-		default:
-			break;
-		}
+	case 'F'://finished
+		if (m_state == RUNNING)
+			stop();
+		break;
+
+	default:
+		break;
 	}
 }
