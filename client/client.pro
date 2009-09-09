@@ -32,6 +32,7 @@ HEADERS += include/ChronoContext.h \
 	include/NewPersonDialog.h \
 	include/NewRaceDialog.h \
 	include/NewResultDialog.h \
+	include/NewResultThread.h \
 	include/NewRoundDialog.h \
 	include/OpenRaceDialog.h \
 	include/PrintDialog.h \
@@ -64,6 +65,7 @@ SOURCES += main.cpp \
 	src/NewPersonDialog.cpp \
 	src/NewRaceDialog.cpp \
 	src/NewResultDialog.cpp \
+	src/NewResultThread.cpp \
 	src/NewRoundDialog.cpp \
 	src/OpenRaceDialog.cpp \
 	src/PrintDialog.cpp \

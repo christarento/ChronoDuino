@@ -16,11 +16,13 @@ INCLUDEPATH += . \
 
 # Input
 HEADERS += include/SerialPort.h \
-	include/SerialTesterDialog.h
+	include/SerialTesterDialog.h \
+	include/SerialThread.h
 	
 FORMS += src/ui/SerialTesterDialog.ui
 
 SOURCES += src/SerialPort.cpp \
-	src/SerialTesterDialog.cpp
+	src/SerialTesterDialog.cpp \
+	src/SerialThread.cpp
 	
 RESOURCES += icons/chrono.qrc
