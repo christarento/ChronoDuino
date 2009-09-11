@@ -23,14 +23,18 @@ POST_TARGETDEPS += ../lib/libcommon.a
 
 # Input
 HEADERS += include/ChronoServer.h \
-           include/EditPreferencesDialog.h
+           include/CompetitorServer.h \
+           include/EditPreferencesDialog.h \
+           include/ServerThread.h
 
 FORMS += src/ui/ChronoServer.ui \
          src/ui/EditPreferencesDialog.ui
 
 SOURCES += main.cpp \
            src/ChronoServer.cpp \
-           src/EditPreferencesDialog.cpp
+           src/CompetitorServer.cpp \
+           src/EditPreferencesDialog.cpp \
+           src/ServerThread.cpp
 
 TRANSLATIONS += server_fr.ts
 
