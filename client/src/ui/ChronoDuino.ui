@@ -33,7 +33,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier">
@@ -66,7 +66,6 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="m_action_connect"/>
    <addaction name="m_action_test"/>
    <addaction name="m_action_print"/>
    <addaction name="m_action_quit"/>
@@ -106,18 +105,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
-   </property>
-  </action>
-  <action name="m_action_connect">
-   <property name="icon">
-    <iconset resource="../../../common/icons/chrono.qrc">
-     <normaloff>:/client/wired.png</normaloff>:/client/wired.png</iconset>
-   </property>
-   <property name="text">
-    <string>&amp;Connect</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+C</string>
    </property>
   </action>
   <action name="m_action_new">
