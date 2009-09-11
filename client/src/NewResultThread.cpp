@@ -20,7 +20,8 @@ NewResultThread::NewResultThread(QObject* a_parent) :
 
 NewResultThread::~NewResultThread()
 {
-
+	m_quit = true;
+	wait();
 }
 
 void NewResultThread::open(const QString& a_hostname, const int a_port)
