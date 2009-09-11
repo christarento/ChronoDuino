@@ -7,6 +7,7 @@
 //============================================================================
 
 #include <QApplication>
+
 #include "ChronoDuino.h"
 #include "version.h"
 
