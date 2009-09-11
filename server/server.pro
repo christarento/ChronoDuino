@@ -32,6 +32,7 @@ SOURCES += main.cpp \
            src/ChronoServer.cpp \
            src/EditPreferencesDialog.cpp
 
-RC_FILE = server.rc
-
 TRANSLATIONS += server_fr.ts
+
+target.path = $$(HOME)/chrono
+INSTALLS += target

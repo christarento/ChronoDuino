@@ -26,3 +26,7 @@ SOURCES += src/SerialPort.cpp \
 	src/SerialThread.cpp
 	
 RESOURCES += icons/chrono.qrc
+
+sounds.path = $$(HOME)/chrono/sounds
+sounds.files = icons/*.wav
+INSTALLS += sounds

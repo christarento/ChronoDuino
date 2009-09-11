@@ -72,6 +72,7 @@ SOURCES += main.cpp \
 	src/ResultInspector.cpp \
 	src/RoundInspector.cpp
 
-RC_FILE = client.rc
-
 TRANSLATIONS += client_fr.ts
+
+target.path = $$(HOME)/chrono
+INSTALLS += target
