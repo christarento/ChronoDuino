@@ -34,6 +34,10 @@ NewResultDialog::NewResultDialog(QWidget* a_parent) :
 	m_sensor_sound = new QSound(sound_dir.filePath("sensor.wav"), this);
 	m_finished_sound = new QSound(sound_dir.filePath("finished.wav"), this);
 
+	//Serial
+	m_serial_thread = new SerialThread(this, this);
+	connect(this, SIGNAL(serialInitialized()), SLOT(refreshRound()));
+
 	//Thread
 	m_result_thread = new NewResultThread(this);
 	connect(m_result_thread, SIGNAL(connected()), SLOT(sendCompetitorInformations()));
@@ -86,15 +90,12 @@ void NewResultDialog::refreshRound()
 
 void NewResultDialog::initSerial()
 {
-	connect(this, SIGNAL(serialInitialized()), SLOT(refreshRound()));
-
 	//Settings
 	const QSettings settings;
 	const QString device = settings.value(EditPreferencesDialog::SERIAL_PORT).toString();
 	const int rate = settings.value(EditPreferencesDialog::SERIAL_RATE).toInt();
 
 	//Serial port
-	m_serial_thread = new SerialThread(this, this);
 	m_serial_thread->open(device, rate, QIODevice::ReadWrite);
 }
 
