@@ -1,18 +1,19 @@
 /*
  * SerialPort.h
  *
- *  Created on: 26 août 2009
+ *  Created on: 26 aoï¿½t 2009
  *      Author: Christo
  */
 
 #ifndef SERIALPORT_H_
 #define SERIALPORT_H_
 
+#include <termios.h>
+
 #include <QIODevice>
 #include <QStringList>
 #include <QTimer>
 
-#include <windows.h>
 
 class SerialPort : public QIODevice
 {
@@ -30,7 +31,7 @@ public:
 	void setFlowControl(bool value);
 	void setKeepOpen(bool value);
 
-	int fd() const {return (int)m_port_desc;}
+	int fd() const {return m_port_desc;}
 
 	/** Closes the serial port. */
 	virtual void close();
@@ -58,8 +59,6 @@ public:
 	 */
 	virtual qint64 writeData(const char *data, qint64 maxSize);
 
-	virtual void setErrorString(const QString& str) {}
-
 	/**
 	 * Gets list of available serial ports
 	 */
@@ -69,7 +68,8 @@ protected:
 
 
 private:
-	HANDLE m_port_desc;
+	int m_port_desc;
+	termios m_old_port_settings;
 
 	QString m_device;
 	int m_rate;
