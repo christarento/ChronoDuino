@@ -1,7 +1,7 @@
 /*
  * SerialTesterDialog.h
  *
- *  Created on: 26 août 2009
+ *  Created on: 26 aoï¿½t 2009
  *      Author: Christo
  */
 
@@ -9,6 +9,7 @@
 #define SERIALTESTERDIALOG_H_
 
 #include <QDialog>
+#include <QSound>
 
 #include "SerialPortReader.h"
 #include "ui_SerialTesterDialog.h"
@@ -26,10 +27,16 @@ public:
 
 private:
 	Ui::SerialTesterDialog m_dialog;
-	SerialThread* m_serial_thread;
+	QSound* m_sound;
+
+	SerialThread* m_thread;
 
 private slots:
-	void instantTest();
+	void changePixmap();
+
+signals:
+	void validated();
+	void sensor();
 };
 
 #endif /* SERIALTESTERDIALOG_H_ */

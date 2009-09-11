@@ -21,7 +21,7 @@ public:
 
 	void open(const QString& device, const int rate, const QIODevice::OpenMode mode);
 
-	SerialPort * getSerialPort() {return m_serial_port;}
+	void sendChar(const char& a_value);
 
 protected:
 	virtual void run();

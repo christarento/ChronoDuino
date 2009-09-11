@@ -1,12 +1,14 @@
 /*
  * SerialTesterDialog.cpp
  *
- *  Created on: 26 août 2009
+ *  Created on: 26 aoï¿½t 2009
  *      Author: Christo
  */
 
+#include <QDir>
 #include <QPushButton>
 #include <QMessageBox>
+#include <QSound>
 
 #include "SerialPort.h"
 #include "SerialTesterDialog.h"
@@ -19,12 +21,17 @@ SerialTesterDialog::SerialTesterDialog(const QString& a_device, const int a_rate
 	//UI
 	m_dialog.setupUi(this);
 
+	//Sound
+	const QDir sound_dir(qApp->applicationDirPath() + "/sounds");
+	m_sound = new QSound(sound_dir.filePath("sensor.wav"), this);
+
 	//Serial port
-	m_serial_thread = new SerialThread(this, this);
-	m_serial_thread->open(a_device, a_rate, QIODevice::ReadWrite);
+	m_thread = new SerialThread(this, this);
+	m_thread->open(a_device, a_rate, QIODevice::ReadWrite);
 
 	//Connect
-	connect(m_dialog.m_pb_test, SIGNAL(clicked()), SLOT(instantTest()));
+	connect(this, SIGNAL(validated()), SLOT(changePixmap()));
+	connect(this, SIGNAL(sensor()), m_sound, SLOT(play()));
 }
 
 SerialTesterDialog::~SerialTesterDialog()
@@ -38,7 +45,7 @@ void SerialTesterDialog::processSerialData(const char a_value)
 	{
 	case 'H':
 	{
-		QApplication::beep();
+		emit sensor();
 		break;
 	}
 
@@ -47,10 +54,7 @@ void SerialTesterDialog::processSerialData(const char a_value)
 
 	case 'T':
 	{
-		QApplication::beep();
-		QPixmap pixmap(":/common/check.png");
-		m_dialog.m_lbl->setPixmap(pixmap);
-		m_dialog.m_group_box->setEnabled(true);
+		emit validated();
 		break;
 	}
 
@@ -59,8 +63,9 @@ void SerialTesterDialog::processSerialData(const char a_value)
 	}
 }
 
-void SerialTesterDialog::instantTest()
+void SerialTesterDialog::changePixmap()
 {
-	const char value = 'T';
-	m_serial_thread->getSerialPort()->writeData(&value, 1);
+	QPixmap pixmap(":/common/check.png");
+	m_dialog.m_lbl->setPixmap(pixmap);
+	m_dialog.m_group_box->setEnabled(true);
 }

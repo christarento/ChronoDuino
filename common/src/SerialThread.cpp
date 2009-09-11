@@ -5,8 +5,8 @@
  *      Author: Christo
  */
 
-#include <QSettings>
 #include <QDebug>
+#include <QSettings>
 
 #include "SerialPort.h"
 #include "SerialPortReader.h"
@@ -37,24 +37,34 @@ void SerialThread::open(const QString& device, const int rate, const QIODevice::
 	start(QThread::TimeCriticalPriority);
 }
 
+void SerialThread::sendChar(const char& a_value)
+{
+	if (m_serial_port)
+		m_serial_port->writeData(&a_value, 1);
+}
+
 void SerialThread::run()
 {
-	m_serial_port = new SerialPort(m_device, m_rate);
-	m_serial_port->open(m_mode);
-	if (!m_serial_port->isOpen())
+	SerialPort serial_port(m_device, m_rate);
+	serial_port.open(m_mode);
+	if (!serial_port.isOpen())
 		return;
+
+	m_serial_port = &serial_port;
+
+	const char test = 'T';
+	serial_port.writeData(&test, 1);
 
 	while (!m_quit)
 	{
-		if (m_serial_port->size())
+		while (serial_port.size())
 		{
 			char value;
-			if (m_serial_port->getChar(&value))
+			if (serial_port.getChar(&value))
 				m_reader->processSerialData(value);
 		}
 		QThread::usleep(500);
 	}
 
-	delete m_serial_port;
 	m_serial_port = NULL;
 }
