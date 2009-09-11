@@ -51,9 +51,7 @@ void SerialThread::run()
 		return;
 
 	m_serial_port = &serial_port;
-
-	const char test = 'T';
-	serial_port.writeData(&test, 1);
+	serial_port.writeData("T", 1);
 
 	while (!m_quit)
 	{
