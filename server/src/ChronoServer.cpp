@@ -1,7 +1,7 @@
 /*
  * ChronoServer.cpp
  *
- *  Created on: 8 août 2009
+ *  Created on: 8 aoï¿½t 2009
  *      Author: Christo
  */
 
@@ -16,27 +16,27 @@
 
 ChronoServer::ChronoServer(QWidget* a_parent) :
 	QMainWindow(a_parent),
-	m_socket(NULL),
-	m_serial_port(NULL),
-	m_state(WAITING_FOR_CONNECTION),
-	m_current_data_type(UNDEFINED),
-	m_num_bytes_to_read(-1)
+	m_server_thread(NULL),
+	m_serial_thread(NULL),
+	m_state(WAITING_FOR_CONNECTION)
 {
 	//UI
 	m_chrono_server.setupUi(this);
 	m_chrono_server.m_central_widget->setEnabled(false);
 
-	//Server
-	m_server = new QTcpServer(this);
-	m_server->setMaxPendingConnections(1);
-	connect(m_server, SIGNAL(newConnection()), SLOT(createNewConnection()));
+	//TCP Server
+	m_server = new CompetitorServer(this);
+	connect(m_server, SIGNAL(newCompetitor(const int&)), SLOT(createNewConnection(const int&)));
 
 	//Connect
 	connect(m_chrono_server.m_action_about, SIGNAL(triggered()), SLOT(aboutAction()));
 	connect(m_chrono_server.m_action_listen, SIGNAL(triggered()), SLOT(listenAction()));
 	connect(m_chrono_server.m_action_preferences, SIGNAL(triggered()), SLOT(preferencesAction()));
 	connect(m_chrono_server.m_action_test, SIGNAL(triggered()), SLOT(testAction()));
-	connect(m_chrono_server.m_pb_arm, SIGNAL(clicked()), SLOT(arm()));
+	connect(m_chrono_server.m_pb_arm, SIGNAL(clicked()), SLOT(onArm()));
+
+	connect(this, SIGNAL(serialInitialized()), SLOT());
+	connect(this, SIGNAL(finished()), SLOT(reset()));
 }
 
 ChronoServer::~ChronoServer()
@@ -94,237 +94,110 @@ void ChronoServer::testAction()
 	test_dialog.exec();
 }
 
-void ChronoServer::arm()
+void ChronoServer::initSerial()
 {
 	//Settings
 	const QSettings settings;
 	const QString device = settings.value(EditPreferencesDialog::SERIAL_PORT).toString();
 	const int rate = settings.value(EditPreferencesDialog::SERIAL_RATE).toInt();
 
-	//Serial
-	m_serial_port = new SerialPort(device, rate, this);
-	connect(m_serial_port, SIGNAL(readyRead()), SLOT(processSerialData()));
-
-	m_serial_port->open(QIODevice::ReadWrite);
-
-	//Send test
-	char test = 'T';
-	m_serial_port->write(&test, 1);
+	m_serial_thread = new SerialThread(this, this);
+	m_serial_thread->open(device, rate, QIODevice::ReadWrite);
 }
 
-void ChronoServer::sendMessage(const QString& a_message)
+void ChronoServer::onArm()
 {
-
+	m_state = ARMED;
+	m_server_thread->arm();
 }
 
-void ChronoServer::processSerialData()
+void ChronoServer::processSerialData(const char a_value)
 {
-	char value;
-	if (m_serial_port->getChar(&value))
+	switch (a_value)
 	{
-		switch (value)
+	case 'H':
+		if (m_state == RUNNING)//finish
 		{
-		case 'H':
-			if (m_state == RUNNING)//finish
-			{
-				char value = 'F';
-				m_socket->write(&value, 1);
-			}
-			break;
-
-		case 'T':
-			if (m_state == READY)
-				;//TODO
-			m_state = ARMED;
-			break;
-
-		default:
-			break;
+			m_server_thread->stopChrono();
+			emit finished();
 		}
+		break;
+
+	case 'T':
+		qDebug("processSerialData T");
+		emit serialInitialized();
+		break;
+
+	default:
+		break;
 	}
 }
 
-void ChronoServer::createNewConnection()
+void ChronoServer::createNewConnection(const int& a_descriptor)
 {
-	//Socket
-	m_socket = m_server->nextPendingConnection();
-	if (!m_socket)
-	{
-		m_chrono_server.m_status_bar->showMessage(tr("New connection : socket creation error"), 2000);
-		return;
-	}
+	//Thread
+	m_server_thread = new ServerThread(this);
+	connect(m_server_thread, SIGNAL(connected()), SLOT());
+	connect(m_server_thread, SIGNAL(error(const QString&)), SLOT());
+	connect(m_server_thread,
+			SIGNAL(competitorArmed(const QString&, const QString&, const QString&)),
+			SLOT(setCompetitorInformations(const QString&, const QString&, const QString&)));
+	connect(m_server_thread, SIGNAL(currentTime(const int&)), SLOT(refreshTime(const int&)));
 
-	m_state = WAITING_FOR_COMPETITOR;
-	m_chrono_server.m_status_bar->showMessage(
-			tr("Connected to %1 on port %2").arg(m_socket->peerAddress().toString()).arg(m_socket->peerPort()),
-			2000);
+	m_server_thread->open(a_descriptor);
+}
 
-	//Connect
-	connect(m_socket, SIGNAL(disconnected()), SLOT(reset()));
-	connect(m_socket, SIGNAL(readyRead()), SLOT(processSocketData()));
-
-
+void ChronoServer::setCompetitorInformations(
+			const QString& a_first_name,
+			const QString& a_last_name,
+			const QString& a_category)
+{
 	//UI
 	m_chrono_server.m_central_widget->setEnabled(true);
+
+	m_chrono_server.m_lbl_first_name->setText(a_first_name);
+	m_chrono_server.m_lbl_last_name->setText(a_last_name);
+	m_chrono_server.m_lbl_round->setText(a_category);
+}
+
+void ChronoServer::refreshTime(const int& a_time)
+{
+	QTime time;
+	time.addMSecs(a_time);
+
+	//UI
+	m_chrono_server.m_lbl_time->setText( time.toString("mm:ss:zzz") );
 }
 
 void ChronoServer::reset()
 {
+	//Reset UI
+	m_chrono_server.m_central_widget->setEnabled(false);
+	m_chrono_server.m_lbl_first_name->clear();
+	m_chrono_server.m_lbl_last_name->clear();
+	m_chrono_server.m_lbl_round->clear();
+	m_chrono_server.m_lbl_time->setText("00:00:000");
+
 	//Socket
-	if (m_socket)
+	if (m_server_thread)
 	{
-		m_socket->deleteLater();
-		m_socket = NULL;
+		m_server_thread->deleteLater();
+		m_server_thread = NULL;
 	}
 
 	//Serial
-	if (m_serial_port)
+	if (m_serial_thread)
 	{
-		m_serial_port->deleteLater();
-		m_serial_port = NULL;
+		m_serial_thread->deleteLater();
+		m_serial_thread = NULL;
 	}
 
 	if (m_state!=FINISHED)
 	{
-		m_chrono_server.m_central_widget->setEnabled(false);
 		QMessageBox::critical(this,
 				tr("Connection error"),
 				tr("Connection closed by peer"));
 	}
 
 	m_state = WAITING_FOR_CONNECTION;
-
-	//Reset UI
-	m_chrono_server.m_lbl_first_name->clear();
-	m_chrono_server.m_lbl_last_name->clear();
-	m_chrono_server.m_lbl_round->clear();
-	m_chrono_server.m_lbl_time->setText("00:00:000");
-}
-
-void ChronoServer::processSocketData()
-{
-	if (m_state == WAITING_FOR_COMPETITOR)
-	{
-		if (!readProtocolHeader())
-			return;
-		if (m_current_data_type != COMPETITOR_INFO)
-		{
-			m_socket->abort();
-			return;
-		}
-		m_state = READY;
-	}
-
-	if (m_state == READY)
-	{
-		if (readProtocolHeader())
-		{
-			m_socket->abort();
-			return;
-		}
-	}
-
-	do
-	{
-		if (m_current_data_type == UNDEFINED)
-		{
-			if (!readProtocolHeader())
-				return;
-		}
-		if (!hasEnoughData())
-			return;
-		processData();
-	}
-	while(m_socket->bytesAvailable() > 0);
-}
-
-bool ChronoServer::readProtocolHeader()
-{
-	if (readDataIntoBuffer() <= 0)
-		return false;
-
-	if (m_buffer == "INFOS ")
-		m_current_data_type = COMPETITOR_INFO;
-	else if (m_buffer == "PHOTO ")
-		m_current_data_type = COMPETITOR_PHOTO;
-	else if (m_buffer == "TIME ")
-		m_current_data_type = TIME;
-	else
-	{
-		m_current_data_type = UNDEFINED;
-		m_socket->abort();
-		return false;
-	}
-
-	m_buffer.clear();
-	m_num_bytes_to_read = dataLengthForCurrentDataType();
-	return true;
-}
-
-int ChronoServer::readDataIntoBuffer(const int a_max_size)
-{
-	if (a_max_size > MAX_BUFFER_SIZE)
-		return 0;
-
-	const int numBytesBeforeRead = m_buffer.size();
-	if (numBytesBeforeRead > MAX_BUFFER_SIZE)
-	{
-		m_socket->abort();
-		return 0;
-	}
-
-	while (m_socket->bytesAvailable() > 0 && m_buffer.size() < a_max_size)
-	{
-		m_buffer.append(m_socket->read(1));
-		if (m_buffer.endsWith(SEPARATOR_TOKEN))
-			break;
-	}
-	return m_buffer.size() - numBytesBeforeRead;
-}
-
-int ChronoServer::dataLengthForCurrentDataType()
-{
-	if (m_socket->bytesAvailable() <= 0 || readDataIntoBuffer() <= 0 || !m_buffer.endsWith(SEPARATOR_TOKEN))
-		return 0;
-
-	m_buffer.chop(1);//remove separator token
-	const int number = m_buffer.toInt();
-	m_buffer.clear();
-	return number;
-}
-
-bool ChronoServer::hasEnoughData()
-{
-	if (m_num_bytes_to_read <= 0)
-		m_num_bytes_to_read = dataLengthForCurrentDataType();
-
-	if (m_socket->bytesAvailable() < m_num_bytes_to_read || m_num_bytes_to_read <= 0)
-		return false;
-
-	return true;
-}
-
-void ChronoServer::processData()
-{
-	 m_buffer = m_socket->read(m_num_bytes_to_read);
-     if (m_buffer.size() != m_num_bytes_to_read)
-     {
-         m_socket->abort();
-         return;
-     }
-
-     switch (m_current_data_type)
-     {
-     case TIME:
-     {
-    	 const int msecs = m_buffer.toInt();
-    	 QTime time;
-    	 time.addMSecs(msecs);
-    	 m_chrono_server.m_lbl_time->setText( time.toString("mm:ss:zzz") );
-    	 break;
-     }
-
-     default:
-    	 break;
-     }
 }

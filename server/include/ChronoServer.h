@@ -1,7 +1,7 @@
 /*
  * ChronoServer.h
  *
- *  Created on: 8 août 2009
+ *  Created on: 8 aoï¿½t 2009
  *      Author: Christo
  */
 
@@ -9,27 +9,18 @@
 #define CHRONOSERVER_H_
 
 #include <QTcpServer>
-#include <QTcpSocket>
 
-#include "SerialPort.h"
+#include "CompetitorServer.h"
+#include "SerialPortReader.h"
+#include "SerialThread.h"
+#include "ServerThread.h"
 #include "ui_ChronoServer.h"
 
-class ChronoServer : public QMainWindow
+class ChronoServer : public QMainWindow, public SerialPortReader
 {
 	Q_OBJECT
 
 public:
-	static const int MAX_BUFFER_SIZE = 1024000;
-	static const char SEPARATOR_TOKEN = '\\';
-
-	enum DataType
-	{
-		COMPETITOR_INFO,
-		COMPETITOR_PHOTO,
-		TIME,
-		UNDEFINED
-	};
-
 	enum State
 	{
 		WAITING_FOR_CONNECTION,
@@ -43,38 +34,39 @@ public:
 	ChronoServer(QWidget* a_parent=NULL);
 	virtual ~ChronoServer();
 
+	virtual void processSerialData(const char a_value);
+
+signals:
+	void serialInitialized();
+	void finished();
+
 private:
-	void processData();
-	void sendMessage(const QString& a_message);
+	void initSerial();
 
 	Ui::ChronoServer m_chrono_server;
-	QTcpServer* m_server;
-	QTcpSocket* m_socket;
-	SerialPort* m_serial_port;
+	CompetitorServer* m_server;
+
+	ServerThread* m_server_thread;
+	SerialThread* m_serial_thread;
 
 	State m_state;
-	DataType m_current_data_type;
-	int m_num_bytes_to_read;
-	QByteArray m_buffer;
 
 private slots:
 	void aboutAction();
 	void listenAction();
 	void preferencesAction();
 	void testAction();
-	void arm();
 
-	//serial
-	void processSerialData();
+	void onArm();
 
-	//socket
-	void createNewConnection();
+	void createNewConnection(const int& a_socket_descriptor);
+	void setCompetitorInformations(
+			const QString& a_first_name,
+			const QString& a_last_name,
+			const QString& a_category);
+	void refreshTime(const int& a_time);
+
 	void reset();
-	void processSocketData();
-	bool readProtocolHeader();
-	int readDataIntoBuffer(const int a_max_size=MAX_BUFFER_SIZE);
-	int dataLengthForCurrentDataType();
-	bool hasEnoughData();
 };
 
 #endif /* CHRONOSERVER_H_ */
