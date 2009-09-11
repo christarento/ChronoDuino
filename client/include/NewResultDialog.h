@@ -10,8 +10,6 @@
 
 #include <QDialog>
 #include <QSound>
-#include <QTime>
-#include <QTimer>
 
 #include "NewResultThread.h"
 #include "SerialPortReader.h"
