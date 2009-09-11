@@ -28,7 +28,6 @@ public:
 	static const QString SERVER_PORT;
 	static const QString SERIAL_PORT;
 	static const QString SERIAL_RATE;
-	static const QString IMAGES_DIR;
 
 private:
 	Ui::EditPreferencesDialog m_dialog;

@@ -23,7 +23,6 @@ const QString EditPreferencesDialog::SERVER_URL = "server/url";
 const QString EditPreferencesDialog::SERVER_PORT = "server/port";
 const QString EditPreferencesDialog::SERIAL_PORT = "serial/port";
 const QString EditPreferencesDialog::SERIAL_RATE = "serial/rate";
-const QString EditPreferencesDialog::IMAGES_DIR = "images_directory";
 
 EditPreferencesDialog::EditPreferencesDialog(QWidget * a_parent):
 	QDialog(a_parent)
