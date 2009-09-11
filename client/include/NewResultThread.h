@@ -8,22 +8,29 @@
 #ifndef NEWRESULTTHREAD_H_
 #define NEWRESULTTHREAD_H_
 
-#include <QPixMap>
+#include <QPixmap>
 #include <QTcpSocket>
 #include <QThread>
-
-class NewResultDialog;
+#include <QTime>
+#include <QTimer>
 
 class NewResultThread : public QThread
 {
 	Q_OBJECT
 
 public:
-	NewResultThread(NewResultDialog* a_parent);
+	NewResultThread(QObject* a_parent);
 	virtual ~NewResultThread();
 
 	void open(const QString& a_hostname, const int a_port);
+	void startChrono();
 
+signals:
+	void connected();
+	void armed();
+	void error(const QString&);
+	void currentTime(const int& a_time);
+	void finished(const int& a_time);
 
 public slots:
 	void sendCompetitorInformations(
@@ -31,18 +38,28 @@ public slots:
 			const QString& a_last_name,
 			const QPixmap& a_photo,
 			const QString& a_category);
-	void sendCurrentTime(const int a_time);
 
 protected:
 	virtual void run();
 
 private:
-	NewResultDialog* m_result_dialog;
+	void processData(const char& a_value);
+	void stopChrono();
+
+	//Chrono
+	QTime m_time;
+	int m_elapsed_time;
+	QTimer* m_refresh_timer;
+
 	bool m_quit;
 
+	//Socket
 	QTcpSocket* m_socket;
 	QString m_hostname;
 	int m_port;
+
+private slots:
+	void refreshTime();
 };
 
 #endif /* NEWRESULTTHREAD_H_ */

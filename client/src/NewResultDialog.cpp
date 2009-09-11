@@ -1,7 +1,7 @@
 /*
  * NewResultDialog.cpp
  *
- *  Created on: 15 août 2009
+ *  Created on: 15 aoï¿½t 2009
  *      Author: Christo
  */
 
@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QSqlQuery>
+#include <QSqlError>
 
 #include "ChronoContext.h"
 #include "EditPreferencesDialog.h"
@@ -21,21 +22,30 @@ NewResultDialog::NewResultDialog(QWidget* a_parent) :
 	QDialog(a_parent),
 	m_result_thread(NULL),
 	m_serial_thread(NULL),
-	m_state(WAITING),
-	m_elapsed_time(-1)
+	m_state(WAITING)
 {
 	//UI
 	m_dialog.setupUi(this);
 	m_dialog.m_central_widget->setEnabled(false);
 
-	//RefreshTimer
-	m_refresh_timer.setInterval(200);
+	//Sound
+	const QDir sound_dir(qApp->applicationDirPath() + "/sounds");
+	m_armed_sound = new QSound(sound_dir.filePath("armed.wav"), this);
+	m_sensor_sound = new QSound(sound_dir.filePath("sensor.wav"), this);
+	m_finished_sound = new QSound(sound_dir.filePath("finished.wav"), this);
+
+	//Thread
+	m_result_thread = new NewResultThread(this);
+	connect(m_result_thread, SIGNAL(connected()), SLOT(sendCompetitorInformations()));
+	connect(m_result_thread, SIGNAL(armed()), SLOT(armedState()));
+	connect(m_result_thread, SIGNAL(currentTime(const int&)), SLOT(refreshTime(const int&)));
+	connect(m_result_thread, SIGNAL(finished(const int&)), SLOT(stop(const int&)));
+	connect(m_result_thread, SIGNAL(error(const QString&)), SLOT(onSocketError(const QString&)));
 
 	//Connect
 	connect(m_dialog.m_pb_quit, SIGNAL(clicked()), SLOT(onQuit()));
 	connect(m_dialog.m_cb_round, SIGNAL(currentIndexChanged(int)), SLOT(refreshCompetitor(int)));
 	connect(m_dialog.m_pb_arm, SIGNAL(clicked()), SLOT(onArm()));
-	connect(&m_refresh_timer, SIGNAL(timeout()), SLOT(refreshTime()));
 
 	initSerial();
 }
@@ -47,13 +57,6 @@ NewResultDialog::~NewResultDialog()
 
 void NewResultDialog::initConnection()
 {
-	//Socket
-	m_result_thread = new NewResultThread(this);
-//	connect(m_socket, SIGNAL(connected()), SLOT(onConnected()));
-//	connect(m_socket, SIGNAL(disconnected()), SLOT(onDisconnected()));
-//	connect(m_socket, SIGNAL(hostFound()), SLOT(onHostFound()));
-//	connect(m_socket, SIGNAL(readyRead()), SLOT(processSocketData()));
-
 	//Settings
 	const QSettings settings;
 	const QString hostname = settings.value(EditPreferencesDialog::SERVER_URL).toString();
@@ -63,7 +66,7 @@ void NewResultDialog::initConnection()
 	m_result_thread->open(hostname, port);
 }
 
-void NewResultDialog::initRound()
+void NewResultDialog::refreshRound()
 {
 	m_dialog.m_cb_round->clear();
 	m_dialog.m_cb_competitor->clear();
@@ -83,6 +86,8 @@ void NewResultDialog::initRound()
 
 void NewResultDialog::initSerial()
 {
+	connect(this, SIGNAL(serialInitialized()), SLOT(refreshRound()));
+
 	//Settings
 	const QSettings settings;
 	const QString device = settings.value(EditPreferencesDialog::SERIAL_PORT).toString();
@@ -91,11 +96,6 @@ void NewResultDialog::initSerial()
 	//Serial port
 	m_serial_thread = new SerialThread(this, this);
 	m_serial_thread->open(device, rate, QIODevice::ReadWrite);
-
-	//TODO timeout
-	//Send test
-	char test = 'T';
-	m_serial_thread->getSerialPort()->writeData(&test, 1);
 }
 
 void NewResultDialog::sendCompetitorInformations()
@@ -114,7 +114,7 @@ void NewResultDialog::sendCompetitorInformations()
 
 	//Photo
 	const QSettings settings;
-	const QDir image_dir( settings.value(EditPreferencesDialog::IMAGES_DIR).toString() );
+	const QDir image_dir( qApp->applicationDirPath() );
 	const QString image_file = image_dir.filePath( query.value(2).toString() );
 	const QPixmap competitor_photo(image_file);
 
@@ -126,26 +126,12 @@ void NewResultDialog::sendCompetitorInformations()
 			m_dialog.m_cb_round->currentText());
 }
 
-void NewResultDialog::sendCurrentTime()
+void NewResultDialog::armedState()
 {
-	m_result_thread->sendCurrentTime( m_time.elapsed() );
-}
+	m_state = ARMED;
+	m_dialog.m_lbl_status->setText(tr("Armed ..."));
 
-void NewResultDialog::start()
-{
-	m_time.start();
-	m_state = RUNNING;
-	m_refresh_timer.start();
-}
-
-void NewResultDialog::stop()
-{
-	//Elapsed time
-	m_elapsed_time = m_time.elapsed();
-	m_refresh_timer.stop();
-
-	//Send finish time to server
-	m_result_thread->sendCurrentTime(m_elapsed_time);
+	m_armed_sound->play();
 }
 
 void NewResultDialog::refreshCompetitor(int a_round_idx)
@@ -174,19 +160,60 @@ void NewResultDialog::refreshCompetitor(int a_round_idx)
 	}
 }
 
-void NewResultDialog::refreshTime()
+void NewResultDialog::refreshTime(const int& a_time)
 {
-	const int msecs = m_time.elapsed();
 	QTime time;
-	time.addMSecs(msecs);
+	time.addMSecs(a_time);
 
+	//UI
 	m_dialog.m_lbl_time->setText( time.toString("mm:ss:zzz") );
+}
+
+void NewResultDialog::start()
+{
+	m_state = RUNNING;
+	m_dialog.m_lbl_status->setText(tr("Running ..."));
+
+	m_sensor_sound->play();
+}
+
+void NewResultDialog::stop(const int& a_time)
+{
+	//UI
+	refreshTime(a_time);
+
+	m_state = FINISHED;
+	m_dialog.m_lbl_status->setText(tr("Finished ..."));
+
+	m_finished_sound->play();
+
+
+	//Insert into database
+	const int competitor_idx = m_dialog.m_cb_competitor->currentIndex();
+	const int round_idx = m_dialog.m_cb_round->currentIndex();
+
+	QSqlQuery insert_query;
+	insert_query.prepare("INSERT into t_results (registration_id, round_id, time) "
+			"VALUES (:reg_id, :rnd_id, :time)");
+	insert_query.bindValue(":reg_id", m_dialog.m_cb_competitor->itemData(competitor_idx));
+	insert_query.bindValue(":rnd_id", m_dialog.m_cb_round->itemData(round_idx));
+	insert_query.bindValue(":time", a_time);
+
+	if (!insert_query.exec())
+		QMessageBox::critical(
+				this,
+				tr("Insert error"),
+				tr("Error while inserting new result : %1").arg(insert_query.lastError().text()));
 }
 
 void NewResultDialog::onArm()
 {
-	const int registration_idx = m_dialog.m_cb_competitor->currentIndex();
-	if (registration_idx == -1)
+	const int competitor_idx = m_dialog.m_cb_competitor->currentIndex();
+	if (competitor_idx == -1)
+		return;
+
+	const int round_idx = m_dialog.m_cb_round->currentIndex();
+	if (round_idx == -1)
 		return;
 
 	//Disable UI
@@ -219,13 +246,7 @@ void NewResultDialog::onQuit()
 		accept();
 }
 
-void NewResultDialog::onConnected()
-{
-	m_state = CONNECTED;
-	m_dialog.m_central_widget->setEnabled(true);
-}
-
-void NewResultDialog::onDisconnected()
+void NewResultDialog::socketError(const QString& a_message)
 {
 	m_dialog.m_central_widget->setEnabled(false);
 	m_state = FINISHED;
@@ -233,12 +254,7 @@ void NewResultDialog::onDisconnected()
 	QMessageBox::critical(
 			this,
 			tr("Connection error"),
-			tr("Connection closed by peer!"));
-}
-
-void NewResultDialog::onHostFound()
-{
-
+			a_message);
 }
 
 void NewResultDialog::processSerialData(const char a_value)
@@ -247,39 +263,15 @@ void NewResultDialog::processSerialData(const char a_value)
 	{
 	case 'H':
 		if (m_state == ARMED)
-			start();
+		{
+			m_result_thread->startChrono();
+			emit started();
+		}
 		break;
 
 	case 'T':
-		initRound();
 		qDebug("Process Serial T");
-		break;
-
-	default:
-		break;
-	}
-}
-
-void NewResultDialog::processSocketData(const char a_value)
-{
-	switch (a_value)
-	{
-	case 'C'://connected to host
-	{
-		m_state = CONNECTED;
-		qDebug("Process Socket connected");
-		sendCompetitorInformations();
-		break;
-	}
-
-	case 'A'://host armed
-		m_state = ARMED;
-		qDebug("Process Socket armed");
-		break;
-
-	case 'F'://finished
-		if (m_state == RUNNING)
-			stop();
+		emit serialInitialized();
 		break;
 
 	default:

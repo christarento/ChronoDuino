@@ -1,7 +1,7 @@
 /*
  * NewResultDialog.h
  *
- *  Created on: 15 août 2009
+ *  Created on: 15 aoï¿½t 2009
  *      Author: Christo
  */
 
@@ -9,6 +9,7 @@
 #define NEWRESULTDIALOG_H_
 
 #include <QDialog>
+#include <QSound>
 #include <QTime>
 #include <QTimer>
 
@@ -26,7 +27,6 @@ public:
 	enum Status
 	{
 		WAITING,
-		CONNECTED,
 		ARMED,
 		RUNNING,
 		FINISHED
@@ -36,37 +36,39 @@ public:
 	virtual ~NewResultDialog();
 
 	virtual void processSerialData(const char a_value);
-	void processSocketData(const char a_value);
+
+signals:
+	void serialInitialized();
+	void started();
 
 private:
-	void initConnection();
-	void initRound();
 	void initSerial();
-
-	void sendCompetitorInformations();
-	void sendCurrentTime();
+	void initConnection();
 
 	Ui::NewResultDialog m_dialog;
 	NewResultThread* m_result_thread;
 	SerialThread* m_serial_thread;
 
 	Status m_state;
-	QTime m_time;
-	QTimer m_refresh_timer;
-	int m_elapsed_time;
+
+	QSound* m_armed_sound;
+	QSound* m_sensor_sound;
+	QSound* m_finished_sound;
 
 private slots:
+	void refreshRound();
+	void sendCompetitorInformations();
+	void armedState();
 	void start();
-	void stop();
 
 	void refreshCompetitor(int a_round_idx);
-	void refreshTime();
+	void refreshTime(const int& a_time);
+	void stop(const int& a_time);
+
 	void onArm();
 	void onQuit();
 
-	void onConnected();
-	void onDisconnected();
-	void onHostFound();
+	void socketError(const QString& a_message);
 };
 
 #endif /* NEWRESULTDIALOG_H_ */
