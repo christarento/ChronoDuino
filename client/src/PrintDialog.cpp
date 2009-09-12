@@ -1,6 +1,8 @@
 
+#include <QMessageBox>
 #include <QPrinter>
 #include <QPrintDialog>
+#include <QSqlError>
 #include <QSqlQuery>
 #include <QTextBlockFormat>
 
@@ -89,7 +91,7 @@ void PrintDialog::insertSeparatorLine(QTextCursor & cursor)
 	cursor.insertText("_______________________________________________",separatorFormat);
 }
 
-QTextTable * PrintDialog::insertCategoryTable(QTextCursor & cursor, const QString & categoryName, const unsigned int & rows)
+QTextTable * PrintDialog::insertCategoryTable(QTextCursor & cursor, const QString & categoryName)
 {
 	QTextBlockFormat blockCategoryTitleFormat;
 	blockCategoryTitleFormat.setAlignment(Qt::AlignCenter);
@@ -109,7 +111,9 @@ QTextTable * PrintDialog::insertCategoryTable(QTextCursor & cursor, const QStrin
 
 
 	cursor.insertBlock(QTextBlockFormat()); // to break the previous block format
-	QTextTable * table = cursor.insertTable(rows+1, 4);
+	QTextTable * table = cursor.insertTable(1, 4);
+	if(!table)
+		return NULL;
 	QTextTableFormat categoryTableFormat;
 	categoryTableFormat.setAlignment(Qt::AlignHCenter);
 	categoryTableFormat.setHeaderRowCount(1); // header line
@@ -156,6 +160,7 @@ void PrintDialog::fillCategoryTableLine(  QTextTable * table, const unsigned int
 		const QString & firstname, const QString & time)
 {
 	int realRow = row + 1;
+	table->insertRows ( realRow, 1 );
 
 	QTextCharFormat cellFormat;
 	cellFormat.setFontPointSize(10.0);
@@ -197,7 +202,13 @@ void PrintDialog::writeResults()
 			"WHERE id=:race_id");
 	queryRaceName.bindValue(":race_id", race_id);
 	if (!queryRaceName.exec() || !queryRaceName.next())
+	{
+		QMessageBox::critical(
+				this,
+				tr("Database error"),
+				tr("Race query : %1").arg(queryRaceName.lastError().text()));
 		return;
+	}
 
 	const QString race_name = queryRaceName.value(0).toString();
 	const QString race_place = queryRaceName.value(1).toString();
@@ -213,7 +224,14 @@ void PrintDialog::writeResults()
 			"WHERE race_id=:race_id");
 	category_query.bindValue(":race_id", race_id);
 	if (!category_query.exec())
+	{
+		QMessageBox::critical(
+				this,
+				tr("Database error"),
+				tr("Category query : %1").arg(category_query.lastError().text()));
 		return;
+	}
+
 	while(category_query.next())
 	{
 		const QString category_id = category_query.value(0).toString();
@@ -221,7 +239,7 @@ void PrintDialog::writeResults()
 
 		//Result query
 		QSqlQuery result_query;
-		result_query.prepare("SELECT res.time, pe.first_name, pe.last_name FROM t_results res"
+		result_query.prepare("SELECT res.time, pe.first_name, pe.last_name FROM t_results res "
 				"JOIN t_registrations reg ON res.registration_id=reg.id "
 				"JOIN t_persons pe ON reg.person_id=pe.id "
 				"JOIN t_categories cat ON reg.category_id=cat.id WHERE cat.race_id=:race_id "
@@ -229,22 +247,31 @@ void PrintDialog::writeResults()
 		result_query.bindValue(":race_id", race_id);
 
 		if (!result_query.exec())
+		{
+			QMessageBox::critical(
+				this,
+				tr("Database error"),
+				tr("Result query : %1").arg(result_query.lastError().text()));
 			return;
+		}
 
-		int rows = result_query.size();
 		cursor = m_ui.m_text_edit->textCursor();
 		insertSeparatorLine(cursor);
-		QTextTable * tableCategory = insertCategoryTable(cursor, category_name, rows);
 
-		int pos = 1;
-		while(result_query.next())
+		QTextTable * tableCategory = insertCategoryTable(cursor, category_name);
+
+		if (tableCategory)
 		{
-			//Draw
-			const QString result_time = result_query.value(0).toString();
-			const QString result_firstname = result_query.value(1).toString();
-			const QString result_lastname = result_query.value(2).toString();
-			fillCategoryTableLine(tableCategory, pos-1, QString::number(pos), result_lastname, result_firstname, result_time);
-			++pos;
+			int pos = 1;
+			while(result_query.next())
+			{
+				//Draw
+				const QString result_time = result_query.value(0).toString();
+				const QString result_firstname = result_query.value(1).toString();
+				const QString result_lastname = result_query.value(2).toString();
+				fillCategoryTableLine(tableCategory, pos-1, QString::number(pos), result_lastname, result_firstname, result_time);
+				++pos;
+			}
 		}
 	}
 }

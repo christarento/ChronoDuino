@@ -22,7 +22,7 @@ public slots :
 
 private:
     // write text :
-    static QTextTable * insertCategoryTable(QTextCursor & cursor, const QString & categoryName, const unsigned int & rows);
+    static QTextTable * insertCategoryTable(QTextCursor & cursor, const QString & categoryName);
     static void fillCategoryTableLine(
     		QTextTable * table, const unsigned int & row,
     		const QString & position, const QString & lastname,
