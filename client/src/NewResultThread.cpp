@@ -105,11 +105,15 @@ void NewResultThread::startChrono()
 {
 	m_time.start();
 	m_elapsed_time = 0;
+
+	m_refresh_timer->start();
 }
 
 void NewResultThread::stopChrono()
 {
 	m_elapsed_time = m_time.elapsed();
+	m_refresh_timer->stop();
+
 	emit finished(m_elapsed_time);
 }
 
