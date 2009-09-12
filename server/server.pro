@@ -1,6 +1,6 @@
 TEMPLATE = app
 TARGET = ChronoServer
-CONFIG += qt console
+CONFIG += qt debug
 DESTDIR = ../bin
 
 QT += network

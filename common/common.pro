@@ -1,6 +1,6 @@
 TEMPLATE = lib
 TARGET = common
-CONFIG += qt console staticlib
+CONFIG += qt debug staticlib
 DESTDIR = ../lib
 
 MOC_DIR = tmp

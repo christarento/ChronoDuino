@@ -1,6 +1,6 @@
 TEMPLATE = app
 TARGET = ChronoDuino
-CONFIG += qt console
+CONFIG += qt debug
 DESTDIR = ../bin
 
 QT += network sql
