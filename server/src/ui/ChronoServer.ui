@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>ChronoServer</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../../../common/icons/chrono.qrc">
+    <normaloff>:/common/iconApp32.png</normaloff>:/common/iconApp32.png</iconset>
+  </property>
   <widget class="QWidget" name="m_central_widget">
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
@@ -221,7 +225,7 @@
      <x>0</x>
      <y>0</y>
      <width>537</width>
-     <height>22</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
