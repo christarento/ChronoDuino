@@ -191,12 +191,11 @@ void ChronoServer::reset()
 	//Reset UI
 	m_chrono_server.m_central_widget->setEnabled(false);
 	m_chrono_server.m_pb_arm->setEnabled(true);
-	m_chrono_server.m_lbl_first_name->clear();
-	m_chrono_server.m_lbl_last_name->clear();
-	m_chrono_server.m_lbl_round->clear();
+	m_chrono_server.m_lbl_first_name->setText(tr("N/A"));
+	m_chrono_server.m_lbl_last_name->setText(tr("N/A"));
+	m_chrono_server.m_lbl_round->setText(tr("N/A"));
 	m_chrono_server.m_lbl_time->setText("00:00:000");
 	m_chrono_server.m_lbl_status->setText(tr("Waiting ..."));
-	m_chrono_server.m_lbl_status->setText(tr("Connection closed, waiting ..."));
 
 	//Socket
 	if (m_server_thread)

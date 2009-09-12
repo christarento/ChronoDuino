@@ -205,13 +205,15 @@ void NewResultDialog::stop(const int& a_time)
 	//Insert into database
 	const int competitor_idx = m_dialog.m_cb_competitor->currentIndex();
 	const int round_idx = m_dialog.m_cb_round->currentIndex();
+	QTime time(0, 0);
+	time = time.addMSecs(a_time);
 
 	QSqlQuery insert_query;
 	insert_query.prepare("INSERT into t_results (registration_id, round_id, time) "
 			"VALUES (:reg_id, :rnd_id, :time)");
 	insert_query.bindValue(":reg_id", m_dialog.m_cb_competitor->itemData(competitor_idx));
 	insert_query.bindValue(":rnd_id", m_dialog.m_cb_round->itemData(round_idx));
-	insert_query.bindValue(":time", a_time);
+	insert_query.bindValue(":time", time.toString("mm::ss::zzz"));
 
 	if (!insert_query.exec())
 		QMessageBox::critical(
