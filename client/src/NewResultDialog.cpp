@@ -36,22 +36,22 @@ NewResultDialog::NewResultDialog(QWidget* a_parent) :
 
 	//Serial
 	m_serial_thread = new SerialThread(this, this);
-	connect(this, SIGNAL(serialInitialized()), SLOT(refreshRound()));
+	connect(m_serial_thread, SIGNAL(connected()), SLOT(sendCompetitorInformations()));
+	connect(this, SIGNAL(started()), SLOT(start()));
 
 	//Thread
 	m_result_thread = new NewResultThread(this);
-	connect(m_result_thread, SIGNAL(connected()), SLOT(sendCompetitorInformations()));
-	connect(m_result_thread, SIGNAL(armed()), SLOT(armedState()));
-	connect(m_result_thread, SIGNAL(currentTime(const int&)), SLOT(refreshTime(const int&)));
+	connect(m_result_thread, SIGNAL(connected()), SLOT(refreshRound()));
+	connect(m_result_thread, SIGNAL(armed()), SLOT(stateArmed()));
 	connect(m_result_thread, SIGNAL(finished(const int&)), SLOT(stop(const int&)));
-	connect(m_result_thread, SIGNAL(error(const QString&)), SLOT(onSocketError(const QString&)));
+	connect(m_result_thread, SIGNAL(error(const QString&)), SLOT(socketError(const QString&)));
 
 	//Connect
 	connect(m_dialog.m_pb_quit, SIGNAL(clicked()), SLOT(onQuit()));
 	connect(m_dialog.m_cb_round, SIGNAL(currentIndexChanged(int)), SLOT(refreshCompetitor(int)));
 	connect(m_dialog.m_pb_arm, SIGNAL(clicked()), SLOT(onArm()));
 
-	initSerial();
+	initConnection();
 }
 
 NewResultDialog::~NewResultDialog()
@@ -61,6 +61,8 @@ NewResultDialog::~NewResultDialog()
 
 void NewResultDialog::initConnection()
 {
+	qDebug("NewResultDialog::initConnection()");
+
 	//Settings
 	const QSettings settings;
 	const QString hostname = settings.value(EditPreferencesDialog::SERVER_URL).toString();
@@ -72,6 +74,7 @@ void NewResultDialog::initConnection()
 
 void NewResultDialog::refreshRound()
 {
+	m_dialog.m_central_widget->setEnabled(true);
 	m_dialog.m_cb_round->clear();
 	m_dialog.m_cb_competitor->clear();
 
@@ -90,6 +93,8 @@ void NewResultDialog::refreshRound()
 
 void NewResultDialog::initSerial()
 {
+	qDebug("NewResultDialog::initSerial()");
+
 	//Settings
 	const QSettings settings;
 	const QString device = settings.value(EditPreferencesDialog::SERIAL_PORT).toString();
@@ -101,17 +106,23 @@ void NewResultDialog::initSerial()
 
 void NewResultDialog::sendCompetitorInformations()
 {
+	qDebug("NewResultDialog::sendCompetitorInformations()");
+
 	const int registration_idx = m_dialog.m_cb_competitor->currentIndex();
 	const int registration_id = m_dialog.m_cb_competitor->itemData(registration_idx).toInt();
 	QSqlQuery query;
-	query.prepare("SELECT per.first_name, per.last_name, per.photo FROM t_registrations reg"
+	query.prepare("SELECT per.first_name, per.last_name, per.photo FROM t_registrations reg "
 			"JOIN t_persons per ON reg.person_id=per.id "
 			"WHERE reg.id=:registration_id");
 	query.bindValue(":registration_id", registration_id);
-	query.exec();
 
-	if (!query.next())
-		return;
+	if (!query.exec())
+		QMessageBox::critical(
+				this,
+				tr("Internal error"),
+				tr("Database error : %1").arg(query.lastError().text()));
+
+	query.next();
 
 	//Photo
 	const QSettings settings;
@@ -127,11 +138,12 @@ void NewResultDialog::sendCompetitorInformations()
 			m_dialog.m_cb_round->currentText());
 }
 
-void NewResultDialog::armedState()
+void NewResultDialog::stateArmed()
 {
-	m_state = ARMED;
+	qDebug("NewResultDialog::stateArmed()");
 	m_dialog.m_lbl_status->setText(tr("Armed ..."));
 
+	m_state = ARMED;
 	m_armed_sound->play();
 }
 
@@ -209,6 +221,8 @@ void NewResultDialog::stop(const int& a_time)
 
 void NewResultDialog::onArm()
 {
+	m_dialog.m_pb_arm->setEnabled(false);
+
 	const int competitor_idx = m_dialog.m_cb_competitor->currentIndex();
 	if (competitor_idx == -1)
 		return;
@@ -221,10 +235,7 @@ void NewResultDialog::onArm()
 	m_dialog.m_cb_competitor->setEnabled(false);
 	m_dialog.m_cb_round->setEnabled(false);
 
-	//TODO timer qui fait clignoter le armed
-
-	//Init socket thread
-	initConnection();
+	initSerial();
 }
 
 void NewResultDialog::onQuit()
@@ -268,11 +279,6 @@ void NewResultDialog::processSerialData(const char a_value)
 			m_result_thread->startChrono();
 			emit started();
 		}
-		break;
-
-	case 'T':
-		qDebug("Process Serial T");
-		emit serialInitialized();
 		break;
 
 	default:

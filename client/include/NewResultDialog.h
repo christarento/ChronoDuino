@@ -36,12 +36,11 @@ public:
 	virtual void processSerialData(const char a_value);
 
 signals:
-	void serialInitialized();
 	void started();
 
 private:
-	void initSerial();
 	void initConnection();
+	void initSerial();
 
 	Ui::NewResultDialog m_dialog;
 	NewResultThread* m_result_thread;
@@ -56,7 +55,7 @@ private:
 private slots:
 	void refreshRound();
 	void sendCompetitorInformations();
-	void armedState();
+	void stateArmed();
 	void start();
 
 	void refreshCompetitor(int a_round_idx);

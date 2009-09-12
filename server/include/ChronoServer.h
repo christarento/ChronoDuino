@@ -37,7 +37,6 @@ public:
 	virtual void processSerialData(const char a_value);
 
 signals:
-	void serialInitialized();
 	void finished();
 
 private:
@@ -60,10 +59,12 @@ private slots:
 	void onArm();
 
 	void createNewConnection(const int& a_socket_descriptor);
+	void waitCompetitor();
 	void setCompetitorInformations(
 			const QString& a_first_name,
 			const QString& a_last_name,
 			const QString& a_category);
+	void stateArmed();
 	void refreshTime(const int& a_time);
 
 	void reset();

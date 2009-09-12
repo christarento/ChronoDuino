@@ -35,7 +35,6 @@ ChronoServer::ChronoServer(QWidget* a_parent) :
 	connect(m_chrono_server.m_action_test, SIGNAL(triggered()), SLOT(testAction()));
 	connect(m_chrono_server.m_pb_arm, SIGNAL(clicked()), SLOT(onArm()));
 
-	connect(this, SIGNAL(serialInitialized()), SLOT());
 	connect(this, SIGNAL(finished()), SLOT(reset()));
 }
 
@@ -102,11 +101,24 @@ void ChronoServer::initSerial()
 	const int rate = settings.value(EditPreferencesDialog::SERIAL_RATE).toInt();
 
 	m_serial_thread = new SerialThread(this, this);
+	connect(m_serial_thread, SIGNAL(connected()), SLOT(stateArmed()));
 	m_serial_thread->open(device, rate, QIODevice::ReadWrite);
 }
 
 void ChronoServer::onArm()
 {
+	initSerial();
+	m_state = ARMED;
+	m_server_thread->arm();
+}
+
+void ChronoServer::stateArmed()
+{
+	//UI
+	m_chrono_server.m_pb_arm->setEnabled(false);
+	m_chrono_server.m_lbl_status->setText(tr("Armed ..."));
+
+	//State
 	m_state = ARMED;
 	m_server_thread->arm();
 }
@@ -119,13 +131,9 @@ void ChronoServer::processSerialData(const char a_value)
 		if (m_state == RUNNING)//finish
 		{
 			m_server_thread->stopChrono();
+			m_state = FINISHED;
 			emit finished();
 		}
-		break;
-
-	case 'T':
-		qDebug("processSerialData T");
-		emit serialInitialized();
 		break;
 
 	default:
@@ -137,14 +145,19 @@ void ChronoServer::createNewConnection(const int& a_descriptor)
 {
 	//Thread
 	m_server_thread = new ServerThread(this);
-	connect(m_server_thread, SIGNAL(connected()), SLOT());
-	connect(m_server_thread, SIGNAL(error(const QString&)), SLOT());
+	connect(m_server_thread, SIGNAL(connected()), SLOT(waitCompetitor()));
+	connect(m_server_thread, SIGNAL(error(const QString&)), SLOT(reset()));
 	connect(m_server_thread,
 			SIGNAL(competitorArmed(const QString&, const QString&, const QString&)),
 			SLOT(setCompetitorInformations(const QString&, const QString&, const QString&)));
 	connect(m_server_thread, SIGNAL(currentTime(const int&)), SLOT(refreshTime(const int&)));
 
 	m_server_thread->open(a_descriptor);
+}
+
+void ChronoServer::waitCompetitor()
+{
+	m_chrono_server.m_status_bar->showMessage(tr("Connected, waiting for competitor informations ..."));
 }
 
 void ChronoServer::setCompetitorInformations(
@@ -154,6 +167,7 @@ void ChronoServer::setCompetitorInformations(
 {
 	//UI
 	m_chrono_server.m_central_widget->setEnabled(true);
+	m_chrono_server.m_status_bar->clearMessage();
 
 	m_chrono_server.m_lbl_first_name->setText(a_first_name);
 	m_chrono_server.m_lbl_last_name->setText(a_last_name);
@@ -171,12 +185,18 @@ void ChronoServer::refreshTime(const int& a_time)
 
 void ChronoServer::reset()
 {
+	const bool show_error = (m_state!=FINISHED);
+
+	m_state = WAITING_FOR_CONNECTION;
+
 	//Reset UI
 	m_chrono_server.m_central_widget->setEnabled(false);
 	m_chrono_server.m_lbl_first_name->clear();
 	m_chrono_server.m_lbl_last_name->clear();
 	m_chrono_server.m_lbl_round->clear();
 	m_chrono_server.m_lbl_time->setText("00:00:000");
+	m_chrono_server.m_lbl_status->setText(tr("Waiting ..."));
+	m_chrono_server.m_lbl_status->setText(tr("Connection closed, waiting ..."));
 
 	//Socket
 	if (m_server_thread)
@@ -192,12 +212,8 @@ void ChronoServer::reset()
 		m_serial_thread = NULL;
 	}
 
-	if (m_state!=FINISHED)
-	{
+	if (show_error)
 		QMessageBox::critical(this,
 				tr("Connection error"),
 				tr("Connection closed by peer"));
-	}
-
-	m_state = WAITING_FOR_CONNECTION;
 }
