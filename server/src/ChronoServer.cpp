@@ -107,15 +107,14 @@ void ChronoServer::initSerial()
 
 void ChronoServer::onArm()
 {
+	m_chrono_server.m_pb_arm->setEnabled(false);
+
 	initSerial();
-	m_state = ARMED;
-	m_server_thread->arm();
 }
 
 void ChronoServer::stateArmed()
 {
 	//UI
-	m_chrono_server.m_pb_arm->setEnabled(false);
 	m_chrono_server.m_lbl_status->setText(tr("Armed ..."));
 
 	//State
@@ -191,6 +190,7 @@ void ChronoServer::reset()
 
 	//Reset UI
 	m_chrono_server.m_central_widget->setEnabled(false);
+	m_chrono_server.m_pb_arm->setEnabled(true);
 	m_chrono_server.m_lbl_first_name->clear();
 	m_chrono_server.m_lbl_last_name->clear();
 	m_chrono_server.m_lbl_round->clear();
