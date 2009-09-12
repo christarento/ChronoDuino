@@ -10,18 +10,22 @@
 
 #include <QThread>
 
-class SerialPort;
+#include "SerialPort.h"
+
 class SerialPortReader;
 
 class SerialThread : public QThread
 {
+	Q_OBJECT
 public:
 	SerialThread(SerialPortReader* a_reader, QObject* a_parent = NULL);
 	virtual ~SerialThread();
 
 	void open(const QString& device, const int rate, const QIODevice::OpenMode mode);
-
 	void sendChar(const char& a_value);
+
+signals:
+	void connected();
 
 protected:
 	virtual void run();

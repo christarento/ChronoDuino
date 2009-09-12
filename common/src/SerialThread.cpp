@@ -8,7 +8,6 @@
 #include <QDebug>
 #include <QSettings>
 
-#include "SerialPort.h"
 #include "SerialPortReader.h"
 #include "SerialThread.h"
 
@@ -50,8 +49,7 @@ void SerialThread::run()
 	if (!serial_port.isOpen())
 		return;
 
-	m_serial_port = &serial_port;
-	serial_port.writeData("T", 1);
+	emit connected();
 
 	while (!m_quit)
 	{
