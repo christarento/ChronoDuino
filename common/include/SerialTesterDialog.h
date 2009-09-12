@@ -35,7 +35,6 @@ private slots:
 	void changePixmap();
 
 signals:
-	void validated();
 	void sensor();
 };
 

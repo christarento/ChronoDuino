@@ -27,10 +27,10 @@ SerialTesterDialog::SerialTesterDialog(const QString& a_device, const int a_rate
 
 	//Serial port
 	m_thread = new SerialThread(this, this);
+	connect(m_thread, SIGNAL(connected()), SLOT(changePixmap()));
 	m_thread->open(a_device, a_rate, QIODevice::ReadWrite);
 
 	//Connect
-	connect(this, SIGNAL(validated()), SLOT(changePixmap()));
 	connect(this, SIGNAL(sensor()), m_sound, SLOT(play()));
 }
 
@@ -48,18 +48,6 @@ void SerialTesterDialog::processSerialData(const char a_value)
 		emit sensor();
 		break;
 	}
-
-	case 'L':
-		break;
-
-	case 'T':
-	{
-		emit validated();
-		break;
-	}
-
-	default:
-		break;
 	}
 }
 
