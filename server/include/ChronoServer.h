@@ -27,7 +27,6 @@ public:
 		WAITING_FOR_COMPETITOR,
 		READY,
 		ARMED,
-		RUNNING,
 		FINISHED
 	};
 

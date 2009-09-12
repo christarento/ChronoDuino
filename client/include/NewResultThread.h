@@ -34,8 +34,8 @@ signals:
 	void connected();
 	void armed();
 	void error(const QString&);
-	void currentTime(const int& a_time);
-	void finished(const int& a_time);
+	void currentTime(const int&);
+	void finished(const int&);
 
 protected:
 	virtual void run();

@@ -43,6 +43,7 @@ NewResultDialog::NewResultDialog(QWidget* a_parent) :
 	m_result_thread = new NewResultThread(this);
 	connect(m_result_thread, SIGNAL(connected()), SLOT(refreshRound()));
 	connect(m_result_thread, SIGNAL(armed()), SLOT(stateArmed()));
+	connect(m_result_thread, SIGNAL(currentTime(const int&)), SLOT(refreshTime(const int&)));
 	connect(m_result_thread, SIGNAL(finished(const int&)), SLOT(stop(const int&)));
 	connect(m_result_thread, SIGNAL(error(const QString&)), SLOT(socketError(const QString&)));
 
@@ -175,8 +176,8 @@ void NewResultDialog::refreshCompetitor(int a_round_idx)
 
 void NewResultDialog::refreshTime(const int& a_time)
 {
-	QTime time;
-	time.addMSecs(a_time);
+	QTime time(0, 0);
+	time = time.addMSecs(a_time);
 
 	//UI
 	m_dialog.m_lbl_time->setText( time.toString("mm:ss:zzz") );

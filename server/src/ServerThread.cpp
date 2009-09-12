@@ -100,7 +100,7 @@ bool ServerThread::readProtocolHeader()
 {
 	if (readDataIntoBuffer() <= 0)
 		return false;
-qDebug() << QString::fromUtf8(m_buffer);
+
 	if (m_buffer == "CO\\")
 		m_current_data_type = COMPETITOR_INFO;
 	else if (m_buffer == "IM\\")
@@ -200,4 +200,8 @@ void ServerThread::process()
      default:
     	 break;
      }
+
+     m_current_data_type = UNDEFINED;
+     m_num_bytes_to_read = 0;
+     m_buffer.clear();
 }

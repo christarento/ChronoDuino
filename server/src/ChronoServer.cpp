@@ -127,7 +127,7 @@ void ChronoServer::processSerialData(const char a_value)
 	switch (a_value)
 	{
 	case 'H':
-		if (m_state == RUNNING)//finish
+		if (m_state == ARMED)//finish
 		{
 			m_server_thread->stopChrono();
 			m_state = FINISHED;
@@ -175,8 +175,8 @@ void ChronoServer::setCompetitorInformations(
 
 void ChronoServer::refreshTime(const int& a_time)
 {
-	QTime time;
-	time.addMSecs(a_time);
+	QTime time(0, 0);
+	time = time.addMSecs(a_time);
 
 	//UI
 	m_chrono_server.m_lbl_time->setText( time.toString("mm:ss:zzz") );
