@@ -23,6 +23,11 @@ public:
 	virtual ~NewResultThread();
 
 	void open(const QString& a_hostname, const int a_port);
+	void sendCompetitorInformations(
+			const QString& a_first_name,
+			const QString& a_last_name,
+			const QPixmap& a_photo,
+			const QString& a_category);
 	void startChrono();
 
 signals:
@@ -32,34 +37,27 @@ signals:
 	void currentTime(const int& a_time);
 	void finished(const int& a_time);
 
-public slots:
-	void sendCompetitorInformations(
-			const QString& a_first_name,
-			const QString& a_last_name,
-			const QPixmap& a_photo,
-			const QString& a_category);
-
 protected:
 	virtual void run();
 
 private:
-	void processData(const char& a_value);
 	void stopChrono();
 
 	//Chrono
 	QTime m_time;
 	int m_elapsed_time;
-	QTimer* m_refresh_timer;
-
-	bool m_quit;
 
 	//Socket
 	QTcpSocket* m_socket;
 	QString m_hostname;
 	int m_port;
 
+	QTimer* m_refresh_timer;
+
 private slots:
 	void refreshTime();
+	void processData();
+	void socketError(QAbstractSocket::SocketError);
 };
 
 #endif /* NEWRESULTTHREAD_H_ */

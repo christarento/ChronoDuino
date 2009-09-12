@@ -10,7 +10,7 @@
 NewResultThread::NewResultThread(QObject* a_parent) :
 	QThread(a_parent),
 	m_elapsed_time(-1),
-	m_quit(false),
+	m_socket(NULL),
 	m_port(-1)
 {
 	m_refresh_timer = new QTimer(this);
@@ -20,8 +20,9 @@ NewResultThread::NewResultThread(QObject* a_parent) :
 
 NewResultThread::~NewResultThread()
 {
-	m_quit = true;
+	quit();
 	wait();
+	delete m_socket;
 }
 
 void NewResultThread::open(const QString& a_hostname, const int a_port)
@@ -38,12 +39,14 @@ void NewResultThread::sendCompetitorInformations(
 		const QPixmap& a_photo,
 		const QString& a_category)
 {
+	qDebug("NewResultThread::sendCompetitorInformations");
+
 	if (!m_socket)
 		qCritical("Closed socket!");
 
-	const QString info_str = a_first_name + "\\" + a_last_name + "\\" + a_category;
+	const QString info_str = a_first_name + "@" + a_last_name + "@" + a_category;
 	const QByteArray info_ba = info_str.toUtf8();
-	QByteArray data = "COMPETITOR " + QByteArray::number(info_ba.size()) + " " + info_ba;
+	QByteArray data = "CO\\" + QByteArray::number(info_ba.size()) + "\\" + info_ba;
 
 	m_socket->write(data);
 }
@@ -51,50 +54,50 @@ void NewResultThread::sendCompetitorInformations(
 void NewResultThread::run()
 {
 	//open socket
-	m_socket = new QTcpSocket();
+	m_socket = new QTcpSocket;
+	connect(m_socket, SIGNAL(readyRead()), SLOT(processData()), Qt::DirectConnection);
+	connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), SLOT(socketError(QAbstractSocket::SocketError)), Qt::DirectConnection);
+
 	m_socket->connectToHost(m_hostname, m_port, QIODevice::ReadWrite);
-	if (!m_socket->waitForConnected())
-	{
-		emit error(m_socket->errorString());
-		m_quit = true;
-	}
-
-	//Wait for
-	while (!m_quit)
-	{
-		while(m_socket->size())
-		{
-			char value;
-			if (m_socket->getChar(&value))
-				processData(value);
-		}
-		QThread::usleep(500);
-	}
-
-	delete m_socket;
-	m_socket = NULL;
+	exec();
 }
 
-void NewResultThread::processData(const char& a_value)
+void NewResultThread::processData()
 {
-	switch (a_value)
+	while (m_socket->bytesAvailable())
 	{
-	case 'C'://connected to host
-		qDebug("Process Socket connected");
-		emit connected();
-		break;
+		char value;
+		if (m_socket->read(&value, 1) != 1 )
+			continue;
 
-	case 'A'://host armed
-		qDebug("Process Socket armed");
-		emit armed();
-		break;
+		switch (value)
+		{
+		case 'C'://connected to host
+			qDebug("Process Socket connected");
+			emit connected();
+			break;
 
-	case 'F'://finished
-		stopChrono();
-		break;
+		case 'A'://host armed
+			qDebug("Process Socket armed");
+			emit armed();
+			break;
 
+		case 'F'://finished
+			stopChrono();
+			break;
+
+		default:
+			break;
+		}
+	}
+}
+
+void NewResultThread::socketError(QAbstractSocket::SocketError a_error)
+{
+	switch(a_error)
+	{
 	default:
-		break;
+		emit (tr("Connection reset by peer"));
 	}
 }
 
@@ -102,13 +105,11 @@ void NewResultThread::startChrono()
 {
 	m_time.start();
 	m_elapsed_time = 0;
-	m_refresh_timer->start();
 }
 
 void NewResultThread::stopChrono()
 {
 	m_elapsed_time = m_time.elapsed();
-	m_refresh_timer->stop();
 	emit finished(m_elapsed_time);
 }
 
@@ -120,7 +121,7 @@ void NewResultThread::refreshTime()
 	if (m_socket)
 	{
 		const QByteArray time = QString::number(elapsed).toUtf8();
-		const QByteArray data = "TIME " + QByteArray::number(time.size()) + " " + time;
+		const QByteArray data = "TI\\" + QByteArray::number(time.size()) + "\\" + time;
 
 		m_socket->write(data);
 	}

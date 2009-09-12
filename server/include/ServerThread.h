@@ -36,10 +36,36 @@ protected:
 	virtual void run();
 
 private:
-	bool m_quit;
+	static const int MAX_BUFFER_SIZE = 1024000;
+	static const char SEPARATOR_TOKEN = '\\';
 
+	enum DataType
+	{
+		COMPETITOR_INFO,
+		COMPETITOR_PHOTO,
+		TIME,
+		UNDEFINED
+	};
+
+	void process();
+	bool readProtocolHeader();
+	int readDataIntoBuffer(const int a_max_size=MAX_BUFFER_SIZE);
+	int dataLengthForCurrentDataType();
+	bool hasEnoughData();
+
+	//Socket
 	QTcpSocket* m_socket;
 	int m_descriptor;
+
+	//Input stream
+	DataType m_current_data_type;
+	int m_num_bytes_to_read;
+	QByteArray m_buffer;
+
+private slots:
+	void processData();
+	void socketError(QAbstractSocket::SocketError);
+	void socketConnected();
 };
 
 #endif /* SERVERTHREAD_H_ */
